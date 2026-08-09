@@ -74,17 +74,19 @@ deliberadamente não vai ser feita ou uma opção descartada com quem a derrubou
 Lista fechada antes da redação. Cada item vira uma verificação no fim, e ter a lista antes muda o que se
 procura — sem ela, a revisão só encontra o que já esperava encontrar.
 
-- [ ] Item descartado na reunião aparecendo como requisito — a falha central do enunciado
-- [ ] Mesmo item classificado de três formas em três documentos
-- [ ] Contradição numérica entre documentos, do tipo 5 tentativas no PRD contra 6 chamadas HTTP no FDD
-- [ ] Citar arquivo que não existe no repositório
-- [ ] Tabela de auditoria com conferências falsas
-- [ ] Métrica tipada como histograma ou gauge quando a infra só produz linha de log
-- [ ] SLA ou percentil inventado ocupando o campo "meta"
-- [ ] RFC ultrapassando o teto de 4 páginas
-- [ ] Campo em payload de resposta que não existe no schema proposto
-- [ ] Frase no futuro sobre artefato do próprio pacote
-- [ ] Um único commit para o pacote inteiro — torna inauditável a narrativa de iteração
+**Todos verificados por script no fecho do pacote. Nenhum presente.**
+
+- [x] Item descartado na reunião aparecendo como requisito — a falha central do enunciado
+- [x] Mesmo item classificado de três formas em três documentos
+- [x] Contradição numérica entre documentos, do tipo 5 tentativas no PRD contra 6 chamadas HTTP no FDD
+- [x] Citar arquivo que não existe no repositório
+- [x] Tabela de auditoria com conferências falsas
+- [x] Métrica tipada como histograma ou gauge quando a infra só produz linha de log
+- [x] SLA ou percentil inventado ocupando o campo "meta"
+- [x] RFC ultrapassando o teto de 4 páginas
+- [x] Campo em payload de resposta que não existe no schema proposto
+- [x] Frase no futuro sobre artefato do próprio pacote
+- [x] Um único commit para o pacote inteiro — torna inauditável a narrativa de iteração
 
 ---
 
@@ -143,19 +145,19 @@ Oito ADRs em MADR. Cobrem as 6 decisões obrigatórias do enunciado, mais snapsh
 
 ### PR 7 · `docs/06-readme` — o processo
 
-- [ ] README final — prompts customizados, iterações e ajustes, como navegar a entrega
-- [ ] Matriz de cobertura dos critérios de aceite do enunciado
-- [ ] Passe de humanização na prosa (README e seções narrativas de PRD e RFC)
-- [ ] Varredura final de consistência entre todos os documentos
+- [x] README final — prompts customizados, iterações e ajustes, como navegar a entrega
+- [x] Matriz de cobertura dos critérios de aceite do enunciado
+- [x] Passe de humanização na prosa (README e seções narrativas de PRD e RFC)
+- [x] Varredura final de consistência entre todos os documentos
 
 ---
 
 ## Verificação antes de fechar
 
-- [ ] Todo caminho de arquivo citado nos documentos existe no repositório
-- [ ] Todo timestamp `[hh:mm] Nome` citado existe em `TRANSCRICAO.md` (155 falas, 54 timestamps distintos, 128 pares únicos)
-- [ ] Nenhum número diverge entre documentos
-- [ ] Nenhum item descartado na reunião aparece como requisito
-- [ ] Nenhum campo de payload de resposta está fora do schema proposto
-- [ ] Nenhuma ferramenta de observabilidade nomeada — a reunião nunca citou nenhuma
-- [ ] `src/`, `prisma/`, `tests/` e configuração intocados
+- [x] Todo caminho de arquivo citado nos documentos existe no repositório
+- [x] Todo timestamp `[hh:mm] Nome` citado existe em `TRANSCRICAO.md` (155 falas, 54 timestamps distintos, 128 pares únicos)
+- [x] Nenhum número diverge entre documentos
+- [x] Nenhum item descartado na reunião aparece como requisito
+- [x] Nenhum campo de payload de resposta está fora do schema proposto
+- [x] Nenhuma ferramenta de observabilidade nomeada — a reunião nunca citou nenhuma
+- [x] `src/`, `prisma/`, `tests/` e configuração intocados

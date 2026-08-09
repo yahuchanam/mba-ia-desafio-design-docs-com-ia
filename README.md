@@ -205,6 +205,232 @@ em vez de assumida.
 E a fórmula da cobertura vem escrita ao lado do número. Percentual sem fórmula é número que ninguém consegue
 auditar.
 
+## Prompts customizados
+
+Prompt vago produz documento vago. Os quatro abaixo são os que mais mudaram o resultado. Cada um vem precedido
+do modo de falha que ele existe para evitar — porque prompt sem problema declarado é prompt que ninguém sabe
+avaliar.
+
+### 1 · Mapeamento do código
+
+**Problema que resolve:** documento que cita `order.service.ts` sem saber o que tem dentro. A IA parafraseia a
+transcrição e inventa o resto; o revisor não tem como perceber sem abrir o arquivo.
+
+```text
+Preciso de um MAPA TÉCNICO PRECISO E VERIFICÁVEL para escrever um Feature Design
+Document. Exatidão é crítica: todo caminho de arquivo, nome de classe, nome de
+método e nome de campo que você reportar precisa existir de fato. Cite caminho:linha.
+
+Investigue e reporte, com trechos curtos de código quando ajudar:
+
+1. O método changeStatus: assinatura completa, o que roda dentro da transação,
+   em que ordem, quais tabelas toca. Onde exatamente um publishWebhookEvent(tx, ...)
+   se encaixaria.
+2. A classe AppError: construtor, propriedades. Liste TODAS as subclasses existentes
+   e seus códigos. Qual o padrão exato a seguir para criar erros novos.
+3. O middleware de erro: formato exato do JSON de resposta.
+[...]
+
+Formato do retorno: markdown por seção, com caminhos e nomes exatos. Inclua no fim
+uma lista "GANCHOS DE INTEGRAÇÃO" com os pontos de acoplamento mais relevantes, cada
+um com arquivo:linha e uma frase sobre como estender.
+
+Não invente nada; se algo não existir, diga explicitamente "não existe".
+```
+
+A última linha é a que mais rende. Foi ela que produziu os dois achados que viraram restrição de projeto: não
+existe nenhum código de webhooks no repositório, e não há cliente HTTP nas dependências. Um prompt otimista
+teria enterrado os dois.
+
+### 2 · Redação de ADR
+
+**Problema que resolve:** ADR que é prosa elogiosa da decisão tomada, sem alternativa real, sem consequência
+negativa e sem nada que possa ser conferido.
+
+```text
+Escreva UM Architecture Decision Record em português do Brasil.
+
+## Leia ANTES de escrever, nesta ordem
+1. docs/processo/FATOS.md — contrato de fatos canônicos. Fonte única de verdade.
+   Nenhum número, nome de tabela, caminho ou header pode divergir dele.
+2. TRANSCRICAO.md — para extrair citações LITERAIS. Toda citação entre aspas tem
+   que ser cópia exata, com o [hh:mm] Nome correto. Uma citação inventada invalida
+   o documento.
+3. Os arquivos de código mencionados no escopo. LEIA de verdade, confira a linha.
+
+## Regras de qualidade
+1. Tamanho: 8 a 12 KB. Acima disso o retorno é negativo. Densidade, não volume.
+2. Nunca 100% prosa. Pelo menos 2 tabelas.
+3. Altura de ADR: registra UMA decisão. NÃO é FDD (nada de payload, colunas,
+   status code). NÃO é PRD (nada de valor de negócio).
+4. Não duplique outro ADR. Use a seção "O que este ADR não cobre" com link.
+5. Consequências negativas de verdade. Se só houver positivas, você não pensou
+   o suficiente. Cada limitação precisa de gatilho de reabertura nomeado.
+6. Rotule o que não veio da reunião como decisão derivada, com a procedência.
+7. Não invente: SLA numérico, ferramenta de observabilidade, custo, headcount,
+   data absoluta da reunião, nome de pessoa fora dos 5 participantes.
+8. Não reintroduza o que foi descartado. Podem aparecer só como exclusão.
+```
+
+A regra 5 é a que separa ADR de release note. A 7 é uma lista negra concreta, não um pedido genérico de "não
+alucine" — e por isso funciona.
+
+### 3 · Auditoria mecânica
+
+**Problema que resolve:** revisão por releitura não pega citação levemente parafraseada nem número de linha
+errado. O olho humano lê o que espera ler.
+
+```text
+Audite os documentos. Seja implacável. Cada verificação é mecânica:
+
+1. CONTRADIÇÕES. Extraia de cada documento todo número e nome próprio (tentativas,
+   intervalos, timeout, tamanho de payload, nomes de tabela, nomes de header).
+   Compare entre documentos e contra o contrato de fatos. Qualquer divergência é bug.
+2. CITAÇÕES. Para CADA trecho entre aspas atribuído a um participante, confirme que
+   o texto é literal e que o [hh:mm] Nome bate.
+3. CAMINHOS. Para cada arquivo:linha citado, confirme que o arquivo existe e que a
+   linha contém o que o documento afirma.
+4. ESCOPO. Confirme que nenhum item descartado aparece como requisito.
+5. ALTURA. Nenhum ADR pode conter payload de exemplo, matriz de erros completa ou
+   argumento de valor de negócio.
+6. INVENÇÃO. Procure por percentual de SLA, ferramenta de observabilidade, volume
+   por período, custo, nome de pessoa fora dos 5 participantes.
+```
+
+Rodei isso como script, não como conversa. Os resultados aparecem na seção seguinte.
+
+### 4 · Extração do contrato de fatos
+
+**Problema que resolve:** o PRD dizer 5 tentativas e o FDD descrever 6. Sem uma base única, cada documento
+reinterpreta a fita — e as reinterpretações divergem.
+
+```text
+Da transcrição e do código, extraia uma base de fatos com identificadores estáveis,
+separada em seis grupos:
+
+F — decisões FECHADAS na reunião, cada uma com o timestamp e o nome de quem fechou
+X — itens DESCARTADOS ou adiados, com a fala que os descartou
+A — ALTERNATIVAS consideradas e recusadas, com o trade-off que motivou o descarte
+C — fatos VERIFICADOS no código, com caminho:linha
+D — DIVERGÊNCIAS entre o que a fala afirma e o que o código faz
+Q — questões deixadas EM ABERTO, com dono
+
+Regra: se um item não couber em nenhum grupo, ele não tem origem e não entra em
+documento nenhum. Liste esses separadamente, como "não inventar".
+```
+
+O grupo `D` foi o mais produtivo. Ele obriga a confrontar cada afirmação técnica da reunião com o arquivo — e
+foi assim que apareceu que a transação não decrementa estoque em toda mudança de status, e que o token não
+carrega identificador de cliente.
+
+## Iterações e ajustes
+
+Sete correções materiais. Nenhuma delas veio de reler o texto; todas vieram de conferir o texto contra alguma
+outra coisa.
+
+**1 · A assinatura extrapolava a fala, e voltou atrás.** Decidi assinar `{timestamp}.{corpo}`, ao padrão
+Stripe, porque isso torna a proteção contra reenvio realmente eficaz — sem o timestamp assinado, ele é
+adulterável e a defesa não vale nada. Revisei contra a regra de rastreabilidade estrita e a decisão não
+sobreviveu: `[09:22] Sofia` diz *"HMAC-SHA256 sobre o corpo do request"*, e nada mais. A assinatura voltou a
+cobrir só o corpo, e a fragilidade virou `Q07`, com dona e prazo na revisão de segurança. **Documentar a
+limitação é honesto; resolvê-la inventando uma decisão não é.**
+
+**2 · "5 tentativas" não fechava com cinco intervalos.** Cinco chamadas HTTP consomem quatro esperas. A
+transcrição decide os dois números em minutos diferentes e eles são incompatíveis se lidos ao pé da letra. O
+desempate estava na própria fala do Diego — *"quase 15 horas entre primeira falha e última tentativa"* — que
+só fecha se os intervalos forem retentativas posteriores à entrega inicial. Virou **5 retentativas, 5
+intervalos, 6 chamadas HTTP**, com a conta publicada num lugar só e o contrato de fatos atualizado. Depois
+propaguei o termo pelo título do ADR-003, pelo ADR-005 e pelo índice, porque metade dos documentos ainda dizia
+"tentativas".
+
+**3 · Dois ADRs viraram um, e sobrou espaço para uma decisão que faltava.** Eu tinha separado retry e dead
+letter em ADRs distintos. Separar fatia uma decisão em vez de acrescentar outra — e o enunciado lista as duas
+como uma linha só. Fundi, e usei o slot liberado para o controle de acesso, que é a decisão de `[09:36] Sofia`
+e que ainda cita `requireRole` no código.
+
+**4 · O teto de payload ia derrubar a mudança de status.** Escrevendo o FDD, percebi que com o payload
+materializado na inserção o tamanho é conhecido **dentro da transação** — e errar ali faz rollback de uma
+mudança de status legítima. A reunião decidiu "erra" sem enxergar essa consequência. Tabelei as três saídas e
+adotei a que grava o evento e o descarta na entrega.
+
+**5 · Um agente morreu no meio e seis arquivos sobreviveram.** Disparei oito subagentes para escrever um ADR
+cada. Todos falharam por limite de sessão e o orquestrador reportou zero produzidos. Ao conferir o disco,
+**seis ADRs estavam lá, completos** — eles falharam ao devolver o resumo, não ao escrever. Escrevi os dois
+restantes eu mesmo. Lição barata: não confie no relatório do orquestrador, confira o artefato.
+
+**6 · O tracker nasceu com 52% de âncora na transcrição.** O gerador inferiu a fonte pelo texto da linha, e
+marcou como código muita coisa que nasce na fita. Reescrevi com um mapa explícito de âncora por item e subiu
+para 78%. O gerador automático estava errado de um jeito que uma leitura casual aprovaria — o número só
+apareceu porque eu o medi.
+
+**7 · Uma regra derivada quase desativou o caso de uso da funcionalidade.** Ia bloquear rotação de segredo
+durante a janela de convivência de 24 horas. Parece prudente. Mas o cenário que justifica rotacionar é
+credencial vazada — e bloquear por 24 horas desativa exatamente o caminho de emergência que a rotação existe
+para oferecer. Toda regra derivada passou a levar o teste: *ela quebra algum cenário declarado no PRD?*
+
+## Como navegar a entrega
+
+```text
+.
+├── README.md                    ← você está aqui: o processo
+├── progress.md                  ← plano, régua e checklist de verificação
+├── TRANSCRICAO.md               ← a fonte (não alterado)
+└── docs/
+    ├── PRD.md                   ← por que e o quê        · produto
+    ├── RFC.md                   ← como propomos resolver · arquitetura
+    ├── FDD.md                   ← como construir         · implementação
+    ├── TRACKER.md               ← de onde veio cada coisa
+    ├── adrs/
+    │   ├── README.md            ← índice, grafo e o que não virou ADR
+    │   └── ADR-001 … ADR-008    ← uma decisão por arquivo
+    └── processo/
+        └── FATOS.md             ← base de fatos (artefato de processo, não entregável)
+```
+
+**Ordem de leitura sugerida**, dependendo do que você quer:
+
+| Se você quer | Leia nesta ordem |
+|---|---|
+| Entender a feature em dez minutos | `RFC.md` → os dois diagramas C4 → `PRD.md` |
+| Começar a implementar | `FDD.md` inteiro → os ADRs conforme o FDD os referencia |
+| Auditar se algo foi inventado | `TRACKER.md` → escolha uma linha → abra a fala em `TRANSCRICAO.md` |
+| Entender por que foi decidido assim | `docs/adrs/README.md` → o grafo → o ADR que interessa |
+| Ver o que ficou de fora e por quê | `PRD.md` seção 4 → `RFC.md` questões em aberto → índice dos ADRs |
+
+Os documentos não se repetem. Se você encontrar a mesma informação em dois deles com nível de detalhe
+parecido, é defeito — a fronteira está descrita em cada documento, na seção que diz o que ele **não** cobre.
+
+## Cobertura dos critérios de aceite
+
+| Critério do enunciado | Onde é atendido |
+|---|---|
+| PRD com as 12 seções obrigatórias | `docs/PRD.md`, seções 1 a 12 |
+| PRD com ao menos 8 requisitos funcionais | 14 requisitos, seção 5 |
+| PRD com objetivo e meta quantitativa | 6 objetivos, 5 com meta numérica, seção 4 |
+| PRD com 2+ itens fora de escopo descartados na reunião | 7 itens, seção 4, cada um com a fala que o descartou |
+| PRD com 2+ riscos com probabilidade, impacto e mitigação | 8 riscos, seção 9 |
+| RFC com as 8 seções obrigatórias | `docs/RFC.md` |
+| RFC com 2+ alternativas descartadas e trade-off | 8 alternativas, cada uma com origem e ADR |
+| RFC com 2+ questões em aberto | 6 questões, cada uma com dono e gatilho |
+| RFC referenciando 2+ ADRs com link | os 8 ADRs |
+| FDD com as 11 seções obrigatórias | `docs/FDD.md`, seções 1 a 14 |
+| FDD com 4+ endpoints com payload e status code | 10 contratos, seção 7 |
+| FDD com matriz de erros `WEBHOOK_*` | 14 códigos ativos, seção 8, mais 2 documentados como ausentes |
+| FDD com "Integração com o sistema existente" e 4+ caminhos reais | 21 caminhos, seção 11 |
+| FDD com observabilidade citando métricas, logs e tracing | seção 10, sem nomear ferramenta |
+| 5 a 8 ADRs no formato `ADR-NNN-titulo.md` | 8 arquivos em `docs/adrs/` |
+| Cada ADR com Status, Contexto, Decisão, Alternativas, Consequências | todos os 8, mais duas seções extras |
+| Cobrir 5 das 6 decisões principais | as 6, mais snapshot e controle de acesso |
+| 1+ ADR referenciando código real | ADR-006 e ADR-008 |
+| Tracker no formato de tabela definido | `docs/TRACKER.md`, seção 1 |
+| Tracker com 70%+ de fonte `TRANSCRICAO` com timestamp | 78%, 135 de 177 |
+| Tracker com 5+ linhas de fonte `CODIGO` | 38 linhas sobre 17 arquivos |
+| README com as 6 seções obrigatórias | este arquivo |
+| README com 2+ prompts customizados | 4 prompts |
+| README com 2+ iterações concretas | 7 iterações |
+| Nenhum arquivo de código inexistente citado | verificado por script; os únicos ausentes são os 10 que a feature cria, marcados como `criar` |
+| `src/`, `prisma/`, `tests/` e configuração intocados | nenhum arquivo de aplicação alterado |
+
 ## Estado da entrega
 
 - [x] Base do processo — `progress.md` e contrato de fatos
@@ -213,6 +439,7 @@ auditar.
 - [x] FDD — implementação, com contratos, modelos, matriz de erros e runbook
 - [x] PRD — problema, escopo, requisitos, métricas e riscos
 - [x] Tracker — 177 itens, com índice reverso da transcrição
+- [x] README final — prompts, iterações, guia de leitura e matriz de cobertura
 - [ ] RFC
 - [ ] FDD
 - [ ] PRD
