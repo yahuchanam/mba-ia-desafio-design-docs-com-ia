@@ -130,9 +130,9 @@ Oito ADRs em MADR. Cobrem as 6 decisões obrigatórias do enunciado, mais snapsh
 
 ### PR 5 · `docs/04-prd` — o produto
 
-- [ ] `docs/PRD.md` — resumo executivo, problema, público, objetivos com meta, escopo, requisitos, riscos, aceitação
-- [ ] Tabela de fora de escopo com a classificação única de cada item
-- [ ] README v5
+- [x] `docs/PRD.md` — resumo executivo, problema, público, objetivos com meta, escopo, requisitos, riscos, aceitação
+- [x] Tabela de fora de escopo com a classificação única de cada item
+- [x] README v5
 
 ### PR 6 · `docs/05-tracker` — a rastreabilidade
 

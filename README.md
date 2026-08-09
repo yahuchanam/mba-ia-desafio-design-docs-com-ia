@@ -155,12 +155,37 @@ Sofia já tinha classificado a exigência de `https` como validação de schema 
 schema produz `VALIDATION_ERROR`. Junto com `WEBHOOK_SECRET_REQUIRED`, são dois dos três exemplos dele que a
 própria reunião invalidou depois. Ambos ficam documentados como ausência, com o que os faria voltar.
 
+## O PRD, e o objetivo que ficou sem número
+
+O [PRD](docs/PRD.md) vem por último entre os grandes documentos, e por isso é o mais curto: com as decisões,
+a proposta e a especificação prontas, ele vira consolidação. **2.841 palavras**, contra o teto de seis mil
+onde um PRD começa a perder altitude e virar documento técnico.
+
+Duas coisas dele valem o registro.
+
+**A meta de latência não pôde ser um teto.** O número acordado é o do Marcos em `[09:02]`: abaixo de dez
+segundos. Mas a aritmética que apareceu no RFC mostra que uma entrega bem-sucedida pode passar disso sem que
+nada tenha falhado. Escrever "abaixo de 10 segundos" como compromisso absoluto seria prometer o que o desenho
+não sustenta. A meta virou percentil sobre a primeira tentativa, com o número acordado preservado e a
+**formulação marcada como derivação nossa** — não como decisão da reunião. O percentil exato fica pendente de
+acordo com os clientes.
+
+**Um dos seis objetivos não tem número, de propósito.** A redução da carga de consulta que os clientes fazem
+hoje foi o motivo declarado do pedido, mas ninguém mede esse volume e a reunião não estabeleceu linha de base
+nem alvo. Qualquer número ali seria um compromisso que ninguém assumiu. Ficou como objetivo qualitativo, com a
+ausência justificada por escrito — é mais útil que uma meta inventada, e mais honesto.
+
+A tabela de fora de escopo tem sete itens, cada um com **uma única classificação**: adiado tem fase prevista,
+descartado não tem, em observação tem gatilho. O mesmo item não aparece classificado de formas diferentes em
+documentos diferentes — o que é fácil de acontecer quando o PRD, o RFC e o FDD tratam o mesmo assunto.
+
 ## Estado da entrega
 
 - [x] Base do processo — `progress.md` e contrato de fatos
 - [x] ADRs — 8 decisões, com índice e justificativa do que ficou de fora
 - [x] RFC — proposta técnica com C4 de contexto e de contêineres
 - [x] FDD — implementação, com contratos, modelos, matriz de erros e runbook
+- [x] PRD — problema, escopo, requisitos, métricas e riscos
 - [ ] RFC
 - [ ] FDD
 - [ ] PRD
