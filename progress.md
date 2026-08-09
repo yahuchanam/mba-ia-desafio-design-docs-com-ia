@@ -115,9 +115,9 @@ Oito ADRs em MADR. Cobrem as 6 decisões obrigatórias do enunciado, mais snapsh
 
 ### PR 3 · `docs/02-rfc` — a proposta
 
-- [ ] `docs/RFC.md` — metadados, TL;DR, contexto, proposta, alternativas, questões em aberto, impacto, links para os ADRs
-- [ ] Diagrama C4 nível 1 (contexto) e nível 2 (contêineres)
-- [ ] README v3
+- [x] `docs/RFC.md` — metadados, TL;DR, contexto, proposta, alternativas, questões em aberto, impacto, links para os ADRs
+- [x] Diagrama C4 nível 1 (contexto) e nível 2 (contêineres)
+- [x] README v3
 
 ### PR 4 · `docs/03-fdd` — a implementação
 
