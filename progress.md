@@ -121,12 +121,12 @@ Oito ADRs em MADR. Cobrem as 6 decisões obrigatórias do enunciado, mais snapsh
 
 ### PR 4 · `docs/03-fdd` — a implementação
 
-- [ ] `docs/FDD.md` — fluxos, contratos, erros, resiliência, observabilidade, critérios de aceite
-- [ ] Seção "Integração com o sistema existente" com caminhos e intervalos de linha reais
-- [ ] Modelos Prisma propostos para as 4 tabelas, com as convenções derivadas do código
-- [ ] Diagrama C4 nível 3 + sequência do fluxo feliz + sequência de falha/retry/DLQ + máquina de estados + ER
-- [ ] Matriz de erros `WEBHOOK_*`, incluindo o tratamento do código órfão `WEBHOOK_SECRET_REQUIRED`
-- [ ] README v4
+- [x] `docs/FDD.md` — fluxos, contratos, erros, resiliência, observabilidade, critérios de aceite
+- [x] Seção "Integração com o sistema existente" com caminhos e intervalos de linha reais
+- [x] Modelos Prisma propostos para as 4 tabelas, com as convenções derivadas do código
+- [x] Diagrama C4 nível 3 + sequência do fluxo feliz + sequência de falha/retry/DLQ + máquina de estados + ER
+- [x] Matriz de erros `WEBHOOK_*`, incluindo o tratamento do código órfão `WEBHOOK_SECRET_REQUIRED`
+- [x] README v4
 
 ### PR 5 · `docs/04-prd` — o produto
 

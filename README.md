@@ -126,11 +126,41 @@ parágrafos para dizer: que são **dois processos sobre o mesmo banco**, e que a
 saída. Validei os dois renderizando localmente antes de commitar, porque diagrama quebrado num documento de
 proposta custa mais caro que diagrama nenhum.
 
+## O FDD, e as três decisões que a reunião não sabia que precisava tomar
+
+O [FDD](docs/FDD.md) é o oposto do RFC: aqui os valores importam, e omiti-los seria inútil para quem vai codar.
+Dez contratos HTTP com exemplo de requisição e resposta, os quatro models Prisma, a matriz de erros, cinco
+diagramas, trinta critérios de aceite e um runbook.
+
+Escrever o detalhe expôs três lugares onde a reunião fechou o quê sem perceber uma consequência.
+
+**O teto de payload podia derrubar a mudança de status.** A Sofia foi categórica em `[09:23]`: evento grande
+demais, *"eu sou a favor de erra"*. Mas com o payload materializado na inserção, o tamanho já é conhecido
+**dentro da transação** — e errar ali significa fazer rollback de uma mudança de status legítima por causa de
+um webhook. As três saídas possíveis estão tabeladas no documento; a escolhida grava o evento e o manda direto
+para a fila de mortos na hora da entrega. Honra o "erra" da Sofia, preserva a atomicidade que o Bruno exigiu
+em `[09:40]`, e não deixa a feature nova derrubar a operação central do sistema.
+
+**Um mesmo código de erro ia acumular dois significados.** `WEBHOOK_ENDPOINT_INACTIVE` serve tanto como
+resposta `409` de um replay recusado quanto como motivo de falha gravado na fila de mortos. São eventos
+diferentes em superfícies diferentes. A matriz de erros ficou dividida em dois vocabulários — contrato HTTP e
+motivo de falha registrado — com a regra de que nenhum código vive nos dois papéis sem que isso esteja escrito.
+
+**Bloquear rotação de segredo durante a janela de convivência pareceria seguro e seria um erro.** O cenário que
+justifica rotacionar é credencial vazada. Bloquear por 24 horas desativaria exatamente o caminho de emergência
+que a funcionalidade existe para oferecer. Rotacionar dentro da janela é permitido, e o runbook trata o caso.
+
+O segundo exemplo que o Bruno deu em `[09:28]` também não sobreviveu: `WEBHOOK_INVALID_URL` some, porque a
+Sofia já tinha classificado a exigência de `https` como validação de schema em `[09:23]` — e validação de
+schema produz `VALIDATION_ERROR`. Junto com `WEBHOOK_SECRET_REQUIRED`, são dois dos três exemplos dele que a
+própria reunião invalidou depois. Ambos ficam documentados como ausência, com o que os faria voltar.
+
 ## Estado da entrega
 
 - [x] Base do processo — `progress.md` e contrato de fatos
 - [x] ADRs — 8 decisões, com índice e justificativa do que ficou de fora
 - [x] RFC — proposta técnica com C4 de contexto e de contêineres
+- [x] FDD — implementação, com contratos, modelos, matriz de erros e runbook
 - [ ] RFC
 - [ ] FDD
 - [ ] PRD
