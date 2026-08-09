@@ -40,8 +40,20 @@ O que não tem origem vira questão em aberto, nunca invenção.
 | F09 | Entry point | `src/worker.ts` + script `npm run worker`, análogo a `src/server.ts` | `[09:11] Larissa` |
 | F10 | Prisma no worker | Mesmo banco, mesma `DATABASE_URL`, **PrismaClient separado** (é outro processo Node) | `[09:30] Bruno` |
 | F11 | Ordering | Por `order_id`, implícita, ordem de `created_at`, **enquanto for single-worker** | `[09:12] Diego` / `[09:13] Larissa` |
-| F12 | Retry — tentativas | **5** tentativas | `[09:15] Diego` / `[09:17] Larissa` |
-| F13 | Retry — backoff | **1m / 5m / 30m / 2h / 12h** (≈15h entre 1ª falha e última tentativa) | `[09:17] Diego` |
+| F12 | Retry — tentativas | **5 retentativas**, além da entrega inicial. Ver nota de desambiguação abaixo | `[09:15] Diego` / `[09:17] Larissa` |
+| F13 | Retry — backoff | **1m / 5m / 30m / 2h / 12h** — cinco intervalos, somando **14h36min** entre a primeira falha e a última tentativa | `[09:17] Diego` |
+
+> **Desambiguação obrigatória de `F12` e `F13`.** A reunião diz "5 tentativas" (`[09:15] Diego`, `[09:17] Larissa`,
+> `[09:48] Larissa`), mas define **cinco intervalos** de backoff. As duas coisas só fecham se os cinco intervalos
+> forem retentativas *posteriores* à entrega inicial — leitura confirmada pelo próprio Diego em `[09:17]`, que
+> descreve "quase 15 horas entre primeira falha e última tentativa": `1m + 5m + 30m + 2h + 12h = 14h36min`, contado
+> a partir da **primeira falha**, não da primeira chamada.
+>
+> **Número canônico: 5 retentativas · 5 intervalos · 6 chamadas HTTP no pior caso.**
+>
+> Onde qualquer documento deste pacote disser "5 tentativas", leia "5 retentativas". A aritmética completa vive
+> em [ADR-003](../adrs/ADR-003-retry-com-backoff-e-dlq.md) e não deve ser reescrita por extenso em nenhum outro
+> documento — os demais referenciam. Este é o ponto de contradição numérica mais comum neste desafio.
 | F14 | DLQ | Tabela **separada** `webhook_dead_letter` com payload, motivo da falha e timestamp | `[09:18] Diego` |
 | F15 | Replay de DLQ | `POST /admin/webhooks/dead-letter/:id/replay` — recoloca na outbox como pendente | `[09:18] Diego` / `[09:35] Diego` |
 | F16 | Replay — autorização | Role **ADMIN** obrigatória, reusando o `requireRole` existente | `[09:36] Sofia` / `[09:36] Larissa` |
