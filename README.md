@@ -179,6 +179,32 @@ A tabela de fora de escopo tem sete itens, cada um com **uma única classificaç
 descartado não tem, em observação tem gatilho. O mesmo item não aparece classificado de formas diferentes em
 documentos diferentes — o que é fácil de acontecer quando o PRD, o RFC e o FDD tratam o mesmo assunto.
 
+## O Tracker, e a pergunta que ninguém faz
+
+O [tracker](docs/TRACKER.md) responde *de onde veio cada item*: 177 linhas, 78% ancoradas numa fala com
+timestamp, o resto em caminho de código real. Foi **gerado a partir das tabelas dos próprios documentos**, que
+já carregam a coluna de origem — transcrever à mão 177 linhas é como se introduz divergência.
+
+Ele tem três coisas além do formato pedido.
+
+**Uma coluna de seção.** A tabela padrão diz que `PRD-RF-09` veio de `[09:06] Diego`. Ela não diz onde
+encontrar `PRD-RF-09`. Com a seção de destino, a verificação funciona nos dois sentidos: da fala para o
+documento e do documento para a fala.
+
+**Uma tabela separada para o que não tem âncora.** As trinta decisões de implementação que a reunião não tomou
+não entram na tabela principal — elas ficam numa seção própria, cada uma com procedência: padrão de mercado
+verificado, derivação do código, ou escolha de quem produziu a documentação. Misturá-las daria a elas uma
+aparência de origem que não têm.
+
+**Um índice reverso.** A tabela principal responde de onde veio cada item. O índice reverso responde a
+pergunta inversa, que é a que expõe omissão: **o que da reunião ficou de fora**. São 54 timestamps distintos
+na fita; 43 têm pelo menos um item do pacote apontando para eles. Os 11 restantes estão listados um a um, com
+o motivo — abertura de bloco, entrada na call, passagem de palavra, encerramento. A ausência fica verificável
+em vez de assumida.
+
+E a fórmula da cobertura vem escrita ao lado do número. Percentual sem fórmula é número que ninguém consegue
+auditar.
+
 ## Estado da entrega
 
 - [x] Base do processo — `progress.md` e contrato de fatos
@@ -186,6 +212,7 @@ documentos diferentes — o que é fácil de acontecer quando o PRD, o RFC e o F
 - [x] RFC — proposta técnica com C4 de contexto e de contêineres
 - [x] FDD — implementação, com contratos, modelos, matriz de erros e runbook
 - [x] PRD — problema, escopo, requisitos, métricas e riscos
+- [x] Tracker — 177 itens, com índice reverso da transcrição
 - [ ] RFC
 - [ ] FDD
 - [ ] PRD

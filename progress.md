@@ -136,10 +136,10 @@ Oito ADRs em MADR. Cobrem as 6 decisões obrigatórias do enunciado, mais snapsh
 
 ### PR 6 · `docs/05-tracker` — a rastreabilidade
 
-- [ ] `docs/TRACKER.md` — tabela no formato obrigatório, com colunas extras de seção-destino e estado
-- [ ] Índice reverso: os 54 timestamps distintos da fita, com o que cobre cada um e o motivo de quem ficou fora
-- [ ] Seção separada das decisões sem âncora na reunião (`H01`–`H30`), com a procedência de cada uma
-- [ ] README v6
+- [x] `docs/TRACKER.md` — tabela no formato obrigatório, com colunas extras de seção-destino e estado
+- [x] Índice reverso: os 54 timestamps distintos da fita, com o que cobre cada um e o motivo de quem ficou fora
+- [x] Seção separada das decisões sem âncora na reunião (`H01`–`H30`), com a procedência de cada uma
+- [x] README v6
 
 ### PR 7 · `docs/06-readme` — o processo
 
