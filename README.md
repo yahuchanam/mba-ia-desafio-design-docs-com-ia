@@ -158,10 +158,11 @@ própria reunião invalidou depois. Ambos ficam documentados como ausência, com
 ## O PRD, e o objetivo que ficou sem número
 
 O [PRD](docs/PRD.md) vem por último entre os grandes documentos, e por isso é o mais curto: com as decisões,
-a proposta e a especificação prontas, ele vira consolidação. **2.912 palavras** — abaixo das 3.500 que a régua
-em [`progress.md`](progress.md) tinha fixado como piso, e com 14 requisitos funcionais onde o alvo pedia 16.
-O alvo foi escrito antes de existir texto, e errou: o que sobrou depois do corte por densidade não pedia mais
-espaço. A régua registra o desvio em vez de ser reescrita para caber no resultado.
+a proposta e a especificação prontas, ele vira consolidação. **2.912 palavras**, contra as 3.500 que a régua
+em [`progress.md`](progress.md) tinha estimado como piso. O alvo foi escrito antes de existir texto e supunha
+um PRD que reexplicasse as decisões; a regra de fronteira mandou esse conteúdo para os ADRs e para o FDD, e
+o que sobrou não pedia mais espaço. A régua foi recalibrada com a razão escrita e com o alvo original
+preservado na coluna ao lado — apagá-lo esconderia onde a estimativa furou.
 
 Duas coisas dele valem o registro.
 
@@ -414,15 +415,18 @@ parecido, é defeito — a fronteira está descrita em cada documento, na seçã
 
 | Critério do enunciado | Onde é atendido |
 |---|---|
+| `docs/PRD.md` existe e está em Markdown | sim |
 | PRD com as 12 seções obrigatórias | `docs/PRD.md`, seções 1 a 12 |
 | PRD com ao menos 8 requisitos funcionais | 14 requisitos, seção 5 |
 | PRD com objetivo e meta quantitativa | 6 objetivos, 5 com meta numérica, seção 4 |
 | PRD com 2+ itens fora de escopo descartados na reunião | 7 itens, seção 4, cada um com a fala que o descartou |
 | PRD com 2+ riscos com probabilidade, impacto e mitigação | 8 riscos, seção 9 |
-| RFC com as 8 seções obrigatórias | `docs/RFC.md` |
+| `docs/RFC.md` existe e está em Markdown | sim |
+| RFC com as 8 seções obrigatórias | `docs/RFC.md`, começando por Metadados |
 | RFC com 2+ alternativas descartadas e trade-off | 8 alternativas, cada uma com origem e ADR |
 | RFC com 2+ questões em aberto | 6 questões, cada uma com dono e gatilho |
 | RFC referenciando 2+ ADRs com link | os 8 ADRs |
+| `docs/FDD.md` existe e está em Markdown | sim |
 | FDD com as 11 seções obrigatórias | `docs/FDD.md`, seções 1 a 14 |
 | FDD com 4+ endpoints com payload e status code | 10 contratos, seção 7 |
 | FDD com matriz de erros `WEBHOOK_*` | 14 códigos ativos, seção 8, mais 2 documentados como ausentes |

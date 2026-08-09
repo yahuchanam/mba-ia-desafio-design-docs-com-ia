@@ -46,8 +46,7 @@ validada, controle transacional de estoque, histórico de mudanças — e sem ne
 O problema não é *detectar* a mudança: o código já sabe exatamente quando ela acontece. É **entregar essa
 informação para fora sem contaminar a transação que a produz**. A mudança de status já é pesada, e Bruno
 resumiu o risco de fazê-la depender de terceiros: *"qualquer cliente lento vai travar mudança de status pra
-outros pedidos"*. Pior: um cliente fora do ar obrigaria a escolher entre perder o evento e derrubar a
-operação de negócio.
+outros pedidos"*.
 
 ## Proposta técnica
 
@@ -73,10 +72,10 @@ flowchart LR
 
 A direção é **só de saída**. Sofia levantou o escopo logo no início e Marcos fechou: *"Só saindo da gente pra
 eles. Eles querem receber, não mandar."* Isso elimina toda a superfície de recepção — verificação de assinatura
-de entrada, rota pública, proteção contra abuso — e é o que torna a feature cabível em três sprints.
+de entrada, rota pública, proteção contra abuso.
 
-A seta pontilhada é o que já existe: o cliente continua podendo consultar o pedido. O evento é enxuto por
-decisão, então quem precisar de detalhe faz a chamada de volta.
+A seta pontilhada é o que já existe: o cliente continua podendo consultar o pedido quando precisar de
+detalhe.
 
 ### Nível 2 — Contêineres
 
@@ -119,8 +118,8 @@ Cluster pra isso é overengineering."*
 O desenho tem quatro movimentos, e cada um resolve um problema específico:
 
 **Atomicidade.** A gravação do evento acontece dentro da transação que muda o status. Se a transação commita,
-o evento existe; se dá rollback, ele some junto. Não há janela em que o status mudou e o evento se perdeu.
-A recíproca também vale, e é deliberada: falha ao gravar o evento derruba a mudança de status. Ver
+o evento existe; se dá rollback, ele some junto. A recíproca também vale, e é deliberada: falha ao gravar o
+evento derruba a mudança de status. Ver
 [ADR-001](adrs/ADR-001-outbox-transacional-no-mysql.md).
 
 **Desacoplamento temporal.** O worker consome em polling de intervalo curto, dimensionado com folga contra o
@@ -199,8 +198,8 @@ consequências: um endereço cadastrado errado ocupa a fila por todo esse perío
 mortos, e a chegada lá não dispara aviso ativo, porque alerta por e-mail ficou fora desta fase.
 
 **Nenhum usuário está vinculado a um cliente.** Qualquer operador autenticado pode cadastrar um webhook para
-qualquer cliente e receber, na resposta, um segredo de assinatura válido para ele. Aceito como `Q04`, mas é o
-maior buraco do desenho e deveria entrar na pauta da revisão de segurança junto com `Q06` e `Q07`.
+qualquer cliente e receber, na resposta, um segredo de assinatura válido para ele. Aceito como `Q04`, e é o
+maior buraco do desenho.
 
 **O encerramento gracioso atual não drena trabalho em andamento.** Copiado como está para o worker, cada
 implantação vira fonte previsível de entrega duplicada. Não quebra a garantia, mas é ruído evitável.

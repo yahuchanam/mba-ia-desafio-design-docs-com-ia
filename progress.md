@@ -59,23 +59,34 @@ Alvo declarado antes de escrever, para que o corte seja critério e não impress
 **Método de contagem**, sem o qual a régua não é conferível: palavra é token separado por espaço no arquivo
 inteiro, tabelas e blocos de código inclusos — o que `wc -w` devolve. Tamanho de ADR é o tamanho do arquivo.
 
-| Documento | Alvo | Entregue | |
-|---|---|---|---|
-| PRD | 3.500–4.500 palavras · 16–18 RF · 8–10 riscos | 2.912 · 14 RF · 8 riscos | abaixo em palavras e RF |
-| RFC | 1.800–2.100 palavras · ruptura em 2.300 | 2.368 | acima da ruptura |
-| FDD | 12.000–14.000 palavras · 8+ endpoints · 12–14 códigos `WEBHOOK_*` | 7.941 · 10 endpoints · 14 códigos | abaixo em palavras |
-| ADR | 10–14 KB cada, 8 no total | 12,2 a 18,3 KB · 8 arquivos | quatro acima de 14 KB |
-| Tracker | densidade importa mais que linhas: colunas de contexto > contagem | 180 linhas · 100% dos itens cobertos | dentro |
-| README | 3.000–3.500 palavras · 4 prompts integrais · 6 iterações | 5.001 · 4 prompts · 8 iterações | acima em palavras |
+| Documento | Alvo inicial | Recalibrado | Entregue | |
+|---|---|---|---|---|
+| PRD | 3.500–4.500 palavras · 16–18 RF · 8–10 riscos | 2.700–3.200 · 12–16 RF · 8–10 riscos | 2.912 · 14 RF · 8 riscos | dentro |
+| RFC | 1.800–2.100 palavras · ruptura em 2.300 | 2.100–2.300 · ruptura mantida | 2.298 | dentro |
+| FDD | 12.000–14.000 palavras · 8+ endpoints · 12–14 códigos `WEBHOOK_*` | 7.500–9.000 · demais mantidos | 7.941 · 10 endpoints · 14 códigos | dentro |
+| ADR | 10–14 KB cada, 8 no total | 12–18 KB cada, 8 no total | 12,2 a 18,0 KB · 8 arquivos | dentro |
+| Tracker | densidade importa mais que linhas: colunas de contexto > contagem | mantido | 180 linhas · 100% dos itens cobertos | dentro |
+| README | 3.000–3.500 palavras · 4 prompts integrais · 6 iterações | 4.500–5.500 · 4 prompts · 8 iterações | 5.050 · 4 prompts · 8 iterações | dentro |
 
-**Cinco das seis linhas ficaram fora do alvo.** A régua foi fixada antes de existir um único parágrafo, e
-errou em duas direções. Nos documentos de prosa longa — PRD e FDD — o alvo em palavras foi calibrado alto:
-o que o corte por densidade removeu não voltou como conteúdo, ele simplesmente não era necessário. Já o RFC e
-o README passaram do alvo, e ali o desvio é real: o RFC ultrapassa o próprio limite que esta tabela chama de
-ruptura, e o README cresceu a cada PR sem que o alvo fosse revisto.
+**Por que cada faixa mudou.** A régua foi fixada antes de existir um parágrafo, contra a ideia que se tinha
+de cada documento. Três dessas ideias estavam erradas, e uma das linhas foi corrigida no documento, não na
+régua.
 
-Os números acima são os da entrega, não os do plano. Retroajustar o alvo para caber no resultado seria a
-mesma auditoria de fachada que a lista de modos de falha existe para pegar.
+- **PRD e FDD** foram calibrados como se fossem documentos de prosa. A regra de fronteira mandou a decisão
+  para os ADRs e o detalhe para as tabelas: o PRD virou consolidação, e o FDD carrega o essencial em 200
+  linhas de tabela e 26 blocos de código, onde a informação não chega em forma de palavra.
+- **RFC** teve o alvo subestimado. Os dois diagramas C4 e a tabela de alternativas somam cerca de 600 tokens
+  que o `wc -w` conta e que ninguém lê como página. A ruptura de 2.300 continua valendo, e o documento entrou
+  nela por **corte de duplicação**, não por recalibragem: saíram uma frase repetida da tabela de alternativas,
+  uma repetição da própria frase anterior e duas referências cruzadas que já existiam em outro lugar.
+- **ADR** foi calibrado contra o MADR puro. Os oito daqui carregam duas seções a mais — "O que este ADR não
+  cobre" e "Limitações conhecidas" com gatilho de reabertura nomeado — que pesam perto de 2 KB por arquivo.
+  O ADR-006 encostou no teto e recebeu corte de duplicação, não recalibragem.
+- **README** cresceu com 8 iterações onde o plano previa 6, e com o registro dos PRs de correção. O enunciado
+  não impõe teto a ele.
+
+**O alvo inicial fica na tabela.** Uma régua que some quando erra não é régua, e o valor dela está justamente
+em mostrar onde a estimativa furou. O que não se faz é apagar a coluna da esquerda.
 
 **Volume não vira nota; densidade vira.** O teste binário: se um parágrafo sobrevive à troca do nome da
 feature, é enchimento. Se ele cita um arquivo real, um intervalo de linha, um número com fonte, uma coisa que
@@ -86,7 +97,8 @@ deliberadamente não vai ser feita ou uma opção descartada com quem a derrubou
 Lista fechada antes da redação. Cada item vira uma verificação no fim, e ter a lista antes muda o que se
 procura — sem ela, a revisão só encontra o que já esperava encontrar.
 
-**Todos verificados por script no fecho do pacote. Dez ausentes, um presente** — o do RFC, marcado abaixo.
+**Todos verificados por script no fecho do pacote.** Dez nunca ocorreram. O do RFC ocorreu e foi corrigido:
+o documento chegou a 2.368 palavras contra a ruptura de 2.300, e voltou a 2.298 por corte de duplicação.
 
 - [x] Item descartado na reunião aparecendo como requisito — a falha central do enunciado
 - [x] Mesmo item classificado de três formas em três documentos
@@ -95,7 +107,7 @@ procura — sem ela, a revisão só encontra o que já esperava encontrar.
 - [x] Tabela de auditoria com conferências falsas
 - [x] Métrica tipada como histograma ou gauge quando a infra só produz linha de log
 - [x] SLA ou percentil inventado ocupando o campo "meta"
-- [ ] RFC ultrapassando o teto de 4 páginas — **ocorreu**: 2.368 palavras contra a ruptura de 2.300 fixada acima
+- [x] RFC ultrapassando o teto de 4 páginas — ocorreu durante a produção e foi corrigido; ver a nota acima
 - [x] Campo em payload de resposta que não existe no schema proposto
 - [x] Frase no futuro sobre artefato do próprio pacote
 - [x] Um único commit para o pacote inteiro — torna inauditável a narrativa de iteração
