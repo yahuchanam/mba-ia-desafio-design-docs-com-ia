@@ -103,24 +103,24 @@ Sete PRs empilhados: cada branch sai da anterior, e o README cresce a cada uma, 
 
 ### PR 1 · `docs/00-processo` — base do processo
 
-- [ ] `progress.md` com plano, decisões e régua de qualidade
-- [ ] `docs/processo/FATOS.md` — contrato de fatos canônico (`F`, `X`, `A`, `C`, `H`, `Q`), rotulado como artefato de processo, não entregável
-- [ ] README v1 — Sobre o desafio · Ferramentas de IA · Workflow adotado
+- [x] `progress.md` com plano, decisões e régua de qualidade
+- [x] `docs/processo/FATOS.md` — contrato de fatos canônico (`F`, `X`, `A`, `C`, `H`, `Q`), rotulado como artefato de processo, não entregável
+- [x] README v1 — Sobre o desafio · Ferramentas de IA · Workflow adotado
 
 ### PR 2 · `docs/01-adrs` — as decisões
 
 Oito ADRs em MADR. Cobrem as 6 decisões obrigatórias do enunciado, mais snapshot e controle de acesso.
 
-- [ ] `ADR-001-outbox-transacional-no-mysql.md`
-- [ ] `ADR-002-worker-separado-em-polling.md`
-- [ ] `ADR-003-retry-com-backoff-e-dlq.md`
-- [ ] `ADR-004-hmac-sha256-com-secret-por-endpoint.md`
-- [ ] `ADR-005-entrega-at-least-once-com-event-id.md`
-- [ ] `ADR-006-reuso-dos-padroes-do-projeto.md` — cita código real
-- [ ] `ADR-007-snapshot-do-payload-na-insercao.md`
-- [ ] `ADR-008-controle-de-acesso-dos-endpoints.md` — cita `requireRole` em `src/middlewares/auth.middleware.ts:49-61`
-- [ ] `docs/adrs/README.md` — índice, e a lista do que **deliberadamente não virou ADR** com a justificativa
-- [ ] README v2
+- [x] `ADR-001-outbox-transacional-no-mysql.md`
+- [x] `ADR-002-worker-separado-em-polling.md`
+- [x] `ADR-003-retry-com-backoff-e-dlq.md`
+- [x] `ADR-004-hmac-sha256-com-secret-por-endpoint.md`
+- [x] `ADR-005-entrega-at-least-once-com-event-id.md`
+- [x] `ADR-006-reuso-dos-padroes-do-projeto.md` — cita código real
+- [x] `ADR-007-snapshot-do-payload-na-insercao.md`
+- [x] `ADR-008-controle-de-acesso-dos-endpoints.md` — cita `requireRole` em `src/middlewares/auth.middleware.ts:49-61`
+- [x] `docs/adrs/README.md` — índice, e a lista do que **deliberadamente não virou ADR** com a justificativa
+- [x] README v2
 
 ### PR 3 · `docs/02-rfc` — a proposta
 
@@ -128,7 +128,7 @@ Oito ADRs em MADR. Cobrem as 6 decisões obrigatórias do enunciado, mais snapsh
 - [ ] Diagrama C4 nível 1 (contexto) e nível 2 (contêineres)
 - [ ] README v3
 
-### PR 4 · `docs/04-fdd` — a implementação
+### PR 4 · `docs/03-fdd` — a implementação
 
 - [ ] `docs/FDD.md` — fluxos, contratos, erros, resiliência, observabilidade, critérios de aceite
 - [ ] Seção "Integração com o sistema existente" com caminhos e intervalos de linha reais
