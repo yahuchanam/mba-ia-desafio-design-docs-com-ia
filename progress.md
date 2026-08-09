@@ -92,7 +92,8 @@ procura — sem ela, a revisão só encontra o que já esperava encontrar.
 
 ## Plano de entrega
 
-Sete PRs empilhados: cada branch sai da anterior, e o README cresce a cada uma, mostrando a evolução.
+Sete PRs empilhados — cada branch sai da anterior, e o README cresce a cada uma, mostrando a evolução — mais
+um oitavo, de integração, que a ordem de merge da pilha acabou exigindo.
 
 ### PR 1 · `docs/00-processo` — base do processo
 
@@ -150,6 +151,14 @@ Oito ADRs em MADR. Cobrem as 6 decisões obrigatórias do enunciado, mais snapsh
 - [x] Passe de humanização na prosa (README e seções narrativas de PRD e RFC)
 - [x] Varredura final de consistência entre todos os documentos
 
+### PR 8 · `docs/05-tracker` → `main` — integração
+
+Os PRs 4 a 7 mergeiam dentro da pilha, e o PR 3 serviu a `main` antes deles. Cada documento parou um degrau
+antes do destino, e a `main` ficou com os stubs de FDD, PRD e tracker.
+
+- [x] Levar FDD, PRD, tracker e README final para a `main`
+- [x] Apagar as sete branches da pilha, já contidas na `main`
+
 ---
 
 ## Verificação antes de fechar
@@ -161,3 +170,4 @@ Oito ADRs em MADR. Cobrem as 6 decisões obrigatórias do enunciado, mais snapsh
 - [x] Nenhum campo de payload de resposta está fora do schema proposto
 - [x] Nenhuma ferramenta de observabilidade nomeada — a reunião nunca citou nenhuma
 - [x] `src/`, `prisma/`, `tests/` e configuração intocados
+- [x] A `main` carrega a versão final de todos os documentos, sem stub remanescente do repositório base

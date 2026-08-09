@@ -68,7 +68,7 @@ chamada de quem produziu a documentação. **Nenhuma pode se passar por fala da 
 documentos se sustentam: ADRs, RFC, FDD, PRD, Tracker e README. Cada item do plano em
 [`progress.md`](progress.md) é um commit. Este README cresce a cada PR, um bloco por documento entregue —
 foi assim que ele foi escrito, e é por isso que o histórico do repositório mostra a evolução em vez de um
-commit único no fim.
+commit único no fim. A pilha cobra um preço na hora de mergear, e ele está na iteração 8.
 
 ## Os ADRs, e o que a produção deles revelou
 
@@ -325,8 +325,8 @@ carrega identificador de cliente.
 
 ## Iterações e ajustes
 
-Sete correções materiais. Nenhuma delas veio de reler o texto; todas vieram de conferir o texto contra alguma
-outra coisa.
+Oito correções materiais. Nenhuma veio de reler o texto. Todas vieram de conferir o que estava escrito contra
+alguma outra coisa: o código, a fita, ou o próprio repositório.
 
 **1 · A assinatura extrapolava a fala, e voltou atrás.** Decidi assinar `{timestamp}.{corpo}`, ao padrão
 Stripe, porque isso torna a proteção contra reenvio realmente eficaz — sem o timestamp assinado, ele é
@@ -367,6 +367,14 @@ apareceu porque eu o medi.
 durante a janela de convivência de 24 horas. Parece prudente. Mas o cenário que justifica rotacionar é
 credencial vazada — e bloquear por 24 horas desativa exatamente o caminho de emergência que a rotação existe
 para oferecer. Toda regra derivada passou a levar o teste: *ela quebra algum cenário declarado no PRD?*
+
+**8 · A pilha de PRs entregou os documentos um degrau antes da `main`.** Cada PR tinha como base a branch do
+anterior. O primeiro deles foi mergeado na `main` sete horas antes dos outros quatro — e quando o FDD chegou
+na branch do RFC, a `main` já tinha se servido dela. O defeito passou despercebido porque os arquivos
+existiam: `docs/FDD.md` estava no lugar certo com **70 bytes**, o stub que veio do repositório do desafio.
+Descobri pelo aviso de push pendente do GitHub, não por revisão. Um oitavo PR levou os quatro documentos
+que faltavam. **Pilha se mergeia do topo para a base**, ou cada PR precisa ser reapontado conforme sua base
+entra.
 
 ## Como navegar a entrega
 
@@ -427,7 +435,7 @@ parecido, é defeito — a fronteira está descrita em cada documento, na seçã
 | Tracker com 5+ linhas de fonte `CODIGO` | 38 linhas sobre 17 arquivos |
 | README com as 6 seções obrigatórias | este arquivo |
 | README com 2+ prompts customizados | 4 prompts |
-| README com 2+ iterações concretas | 7 iterações |
+| README com 2+ iterações concretas | 8 iterações |
 | Nenhum arquivo de código inexistente citado | verificado por script; os únicos ausentes são os 10 que a feature cria, marcados como `criar` |
 | `src/`, `prisma/`, `tests/` e configuração intocados | nenhum arquivo de aplicação alterado |
 
@@ -440,8 +448,4 @@ parecido, é defeito — a fronteira está descrita em cada documento, na seçã
 - [x] PRD — problema, escopo, requisitos, métricas e riscos
 - [x] Tracker — 177 itens, com índice reverso da transcrição
 - [x] README final — prompts, iterações, guia de leitura e matriz de cobertura
-- [ ] RFC
-- [ ] FDD
-- [ ] PRD
-- [ ] Tracker
-- [ ] README final com prompts, iterações e guia de leitura
+- [x] Integração na `main` — os quatro documentos que a pilha de PRs deixou um degrau atrás
