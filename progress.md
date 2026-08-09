@@ -50,24 +50,11 @@ Para o FDD ficar acionável, faltavam decisões de implementação que a reuniã
 | `H.4` | `customerId` no body do POST e query param na listagem — fecha a `Q03` | `[09:32]` + `CODIGO` |
 | `H23` | O que a reunião decidiu vira constante citando o ADR; só tuning vira env | `PRODUTO` |
 
-### Posição contra o benchmark
-
-Os 12 forks qualificados foram lidos decisão a decisão. Onde estamos:
-
-| Situação | Eixos |
-|---|---|
-| **Convergente** | observabilidade sem vendor (12/12) · fan-out por endpoint (10/12) · `customerId` no body (10/12) · nomes das 4 tabelas (7/12) · 4xx retenta (8/12) · secret em claro (5 dos que decidiram) · reclaim de evento travado (5/12) · 8 ADRs (5/12, a moda) |
-| **Dividido, ficamos na minoria com argumento** | `v1=<hex>` no `X-Signature` (2/12, mas é o único formato que protege contra downgrade de algoritmo) · constante vs env (1/12) |
-| **Divergente por escolha** | paralelismo por `order_id` (1/12) — resolve o risco que 5 forks apenas registraram · `FOR UPDATE SKIP LOCKED` (0/12) |
-| **Revertido pelo benchmark** | assinatura sobre `timestamp.corpo` → voltou para só o corpo, como 12/12 |
-| **Ninguém fez** | diagramas C4 (0/12) · coluna temporal e de seção-destino no Tracker (1/12 tem qualquer coluna extra) · índice reverso da transcrição (0/12) |
-
 ---
 
 ## Régua de qualidade
 
-Levantada varrendo os 151 forks do repositório base: **131 concluíram o desafio**. Doze foram analisados
-a fundo. O que o benchmark ensinou:
+Alvo declarado antes de escrever, para que o corte seja critério e não impressão:
 
 | Documento | Alvo | Teto onde o retorno vira negativo |
 |---|---|---|
@@ -78,17 +65,21 @@ a fundo. O que o benchmark ensinou:
 | Tracker | densidade importa mais que linhas: colunas de contexto > contagem | 500 linhas rasas perdem para 130 linhas ricas |
 | README | 3.000–3.500 palavras · 4 prompts integrais · 6 iterações | — |
 
-**Volume não vira nota; densidade vira.** No lote, o maior pacote (518 KB) foi o mais penalizado e o menor
-(227 KB) foi o mais elogiado. O teste binário: se um parágrafo sobrevive à troca do nome da feature, é enchimento.
+**Volume não vira nota; densidade vira.** O teste binário: se um parágrafo sobrevive à troca do nome da
+feature, é enchimento. Se ele cita um arquivo real, um intervalo de linha, um número com fonte, uma coisa que
+deliberadamente não vai ser feita ou uma opção descartada com quem a derrubou, é densidade.
 
-### Armadilhas confirmadas no benchmark
+### Modos de falha a vigiar
+
+Lista fechada antes da redação. Cada item vira uma verificação no fim, e ter a lista antes muda o que se
+procura — sem ela, a revisão só encontra o que já esperava encontrar.
 
 - [ ] Item descartado na reunião aparecendo como requisito — a falha central do enunciado
 - [ ] Mesmo item classificado de três formas em três documentos
-- [ ] Contradição numérica entre documentos (caso real: 5 tentativas no PRD contra 6 chamadas HTTP no FDD)
+- [ ] Contradição numérica entre documentos, do tipo 5 tentativas no PRD contra 6 chamadas HTTP no FDD
 - [ ] Citar arquivo que não existe no repositório
 - [ ] Tabela de auditoria com conferências falsas
-- [ ] Métrica tipada como histograma/gauge quando a infra só produz linha de log
+- [ ] Métrica tipada como histograma ou gauge quando a infra só produz linha de log
 - [ ] SLA ou percentil inventado ocupando o campo "meta"
 - [ ] RFC ultrapassando o teto de 4 páginas
 - [ ] Campo em payload de resposta que não existe no schema proposto
@@ -103,24 +94,24 @@ Sete PRs empilhados: cada branch sai da anterior, e o README cresce a cada uma, 
 
 ### PR 1 · `docs/00-processo` — base do processo
 
-- [ ] `progress.md` com plano, decisões e régua de qualidade
-- [ ] `docs/processo/FATOS.md` — contrato de fatos canônico (`F`, `X`, `A`, `C`, `H`, `Q`), rotulado como artefato de processo, não entregável
-- [ ] README v1 — Sobre o desafio · Ferramentas de IA · Workflow adotado
+- [x] `progress.md` com plano, decisões e régua de qualidade
+- [x] `docs/processo/FATOS.md` — contrato de fatos canônico (`F`, `X`, `A`, `C`, `H`, `Q`), rotulado como artefato de processo, não entregável
+- [x] README v1 — Sobre o desafio · Ferramentas de IA · Workflow adotado
 
 ### PR 2 · `docs/01-adrs` — as decisões
 
 Oito ADRs em MADR. Cobrem as 6 decisões obrigatórias do enunciado, mais snapshot e controle de acesso.
 
-- [ ] `ADR-001-outbox-transacional-no-mysql.md`
-- [ ] `ADR-002-worker-separado-em-polling.md`
-- [ ] `ADR-003-retry-com-backoff-e-dlq.md`
-- [ ] `ADR-004-hmac-sha256-com-secret-por-endpoint.md`
-- [ ] `ADR-005-entrega-at-least-once-com-event-id.md`
-- [ ] `ADR-006-reuso-dos-padroes-do-projeto.md` — cita código real
-- [ ] `ADR-007-snapshot-do-payload-na-insercao.md`
-- [ ] `ADR-008-controle-de-acesso-dos-endpoints.md` — cita `requireRole` em `src/middlewares/auth.middleware.ts:49-61`
-- [ ] `docs/adrs/README.md` — índice, e a lista do que **deliberadamente não virou ADR** com a justificativa
-- [ ] README v2
+- [x] `ADR-001-outbox-transacional-no-mysql.md`
+- [x] `ADR-002-worker-separado-em-polling.md`
+- [x] `ADR-003-retry-com-backoff-e-dlq.md`
+- [x] `ADR-004-hmac-sha256-com-secret-por-endpoint.md`
+- [x] `ADR-005-entrega-at-least-once-com-event-id.md`
+- [x] `ADR-006-reuso-dos-padroes-do-projeto.md` — cita código real
+- [x] `ADR-007-snapshot-do-payload-na-insercao.md`
+- [x] `ADR-008-controle-de-acesso-dos-endpoints.md` — cita `requireRole` em `src/middlewares/auth.middleware.ts:49-61`
+- [x] `docs/adrs/README.md` — índice, e a lista do que **deliberadamente não virou ADR** com a justificativa
+- [x] README v2
 
 ### PR 3 · `docs/02-rfc` — a proposta
 
@@ -128,7 +119,7 @@ Oito ADRs em MADR. Cobrem as 6 decisões obrigatórias do enunciado, mais snapsh
 - [ ] Diagrama C4 nível 1 (contexto) e nível 2 (contêineres)
 - [ ] README v3
 
-### PR 4 · `docs/04-fdd` — a implementação
+### PR 4 · `docs/03-fdd` — a implementação
 
 - [ ] `docs/FDD.md` — fluxos, contratos, erros, resiliência, observabilidade, critérios de aceite
 - [ ] Seção "Integração com o sistema existente" com caminhos e intervalos de linha reais
