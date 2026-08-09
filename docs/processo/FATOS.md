@@ -196,7 +196,7 @@ Nenhum deles pode ser apresentado como decisão da reunião. Cada um carrega sua
 | # | Decisão | Valor | Procedência |
 |---|---|---|---|
 | H01 | Valor de `X-Signature` | `v1=<hex>`; múltiplas assinaturas separadas por vírgula durante a rotação | `MERCADO` Stripe / GitHub |
-| H02 | String canônica assinada | **Somente o corpo cru.** Literal a `[09:22] Sofia` ("HMAC-SHA256 sobre o corpo do request"). O `X-Timestamp` **não** entra na assinatura | `[09:22]` — decisão revista: assinar `timestamp.corpo` (padrão Stripe) foi cogitado e descartado por extrapolar a fala. 12/12 forks também assinam só o corpo |
+| H02 | String canônica assinada | **Somente o corpo cru.** Literal a `[09:22] Sofia` ("HMAC-SHA256 sobre o corpo do request"). O `X-Timestamp` **não** entra na assinatura | `[09:22]` — assinar `{timestamp}.{corpo}`, ao padrão Stripe, foi cogitado e descartado por extrapolar a fala. A consequência está em `Q07` |
 | H03 | Formato de `X-Timestamp` | Unix epoch em segundos (payload segue ISO 8601 conforme `[09:43]`) | `MERCADO` Stripe / Slack |
 | H04 | Tolerância de recência | 5 minutos, **recomendada ao cliente na doc** — não validamos, somos o emissor. **Limitação a declarar:** como `X-Timestamp` fica fora da assinatura (`H02`), ele é adulterável; a defesa efetiva contra reprocessamento é a dedup por `X-Event-Id` (`F25`). Ver `Q07` | `MERCADO` Stripe + limitação derivada de `H02` |
 | H05 | Geração do secret | 32 bytes de `crypto.randomBytes` em hex, prefixo `whsec_` | `MERCADO` Stripe + `CODIGO` (sem dependência nova, `node:crypto`) |

@@ -29,7 +29,7 @@ os prompts, revisar com desconfiança o que volta e corrigir até o pacote ficar
 | Ferramenta | Papel |
 |---|---|
 | **Claude Code (Opus 5)** | Condução do trabalho: leitura do código, análise da transcrição, produção dos documentos e orquestração dos subagentes |
-| **Subagentes em paralelo** | Duas frentes que não caberiam numa janela de contexto só: o mapeamento técnico do OMS e a análise competitiva dos forks |
+| **Subagentes em paralelo** | Duas frentes que não caberiam numa janela de contexto só: o mapeamento técnico do OMS e a redação simultânea dos ADRs |
 | **Skill `humanize-pt-br`** | Revisão da prosa. Aplicada nas seções narrativas; tabelas, contratos e blocos de código ficam intocados por decisão da própria skill |
 | **Busca e leitura web** | Verificação de padrão de mercado para os pontos que a reunião não especificou — documentação de webhooks da Stripe, do GitHub e da spec Standard Webhooks |
 
@@ -53,11 +53,10 @@ descrever 6, que é a contradição mais comum neste desafio. A base está em
 ADR-003 é dono da curva de backoff; o FDD é dono da matriz de erros. Os outros documentos referenciam por
 link em vez de reproduzir. Conteúdo duplicado é sintoma de coisa na altura errada.
 
-**4. Comparar com quem já resolveu.** O repositório base tem 151 forks. Uma varredura da árvore git
-identificou os **131 que de fato concluíram o desafio** — tamanho de repositório era um proxy ruim, e vários
-dos melhores não apareciam por ele. Doze foram lidos a fundo por subagentes, decisão a decisão. Isso deu
-duas coisas: uma régua de qualidade com números por documento e uma lista de armadilhas observadas, não
-imaginadas.
+**4. Definir a régua antes de escrever.** Alvo de tamanho e densidade para cada documento, e uma lista de
+modos de falha para vigiar durante a produção: contradição numérica entre documentos, caminho de arquivo
+inexistente, item descartado na reunião reaparecendo como requisito, RFC que incha até virar FDD. Ter a lista
+antes muda o que se procura na revisão — sem ela, o revisor só encontra o que já esperava.
 
 **5. Resolver as ambiguidades antes de redigir.** A reunião fecha o *quê* mas deixa buracos no *como*. O
 formato do valor da assinatura, o tamanho do lote do worker, o nome de duas das quatro tabelas, o que
