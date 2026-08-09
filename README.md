@@ -104,10 +104,33 @@ depois, em `[09:31]`, o Marcos fecha que a secret é gerada por nós. O caso de 
 outra. Em vez de manter o nome e inventar semântica para ele, o ADR-006 documenta a subtração — onde poderia
 ocorrer, por que não ocorre, e o que faria o código voltar a fazer sentido.
 
+## O RFC, e a regra que o manteve curto
+
+O [RFC](docs/RFC.md) é o documento com o teto mais apertado do pacote: duas a quatro páginas. A tentação é
+gastar esse espaço explicando a solução, e aí ele vira um FDD mal disfarçado.
+
+A regra que usei para segurar: **o RFC descreve formas e omite valores.** "Polling curto", não "2 segundos".
+"Intervalos crescentes até um teto", não a curva. "Segredo por endpoint com janela de convivência", não 24
+horas. Cada número tem dono — um ADR ou o FDD — e o RFC referencia em vez de repetir. Isso resolve dois
+problemas de uma vez: mantém o documento na altura de arquitetura e elimina a chance de um número divergir
+entre documentos, porque ele só existe num lugar.
+
+Abri **uma exceção deliberada**, na seção de riscos: a aritmética da latência. Somando a espera do polling ao
+tempo de resposta de um cliente que chegue perto do limite de timeout, uma entrega **bem-sucedida** ultrapassa
+os dez segundos prometidos ao cliente em `[09:02]`, sem que nada tenha falhado. Aqui o número *é* o risco, e
+esconder o valor esconderia o problema. A consequência sobe para o PRD: a métrica tem que ser percentil sobre
+a primeira tentativa, não teto absoluto.
+
+Os dois diagramas C4 — contexto e contêineres — são o que mostra em vinte segundos o que a prosa leva três
+parágrafos para dizer: que são **dois processos sobre o mesmo banco**, e que a API nunca faz chamada HTTP de
+saída. Validei os dois renderizando localmente antes de commitar, porque diagrama quebrado num documento de
+proposta custa mais caro que diagrama nenhum.
+
 ## Estado da entrega
 
 - [x] Base do processo — `progress.md` e contrato de fatos
 - [x] ADRs — 8 decisões, com índice e justificativa do que ficou de fora
+- [x] RFC — proposta técnica com C4 de contexto e de contêineres
 - [ ] RFC
 - [ ] FDD
 - [ ] PRD
