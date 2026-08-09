@@ -71,10 +71,44 @@ documentos se sustentam: ADRs, RFC, FDD, PRD, Tracker e README. Cada item do pla
 foi assim que ele foi escrito, e é por isso que o histórico do repositório mostra a evolução em vez de um
 commit único no fim.
 
+## Os ADRs, e o que a produção deles revelou
+
+Oito decisões, uma por arquivo, em [`docs/adrs/`](docs/adrs/). Cobrem as seis que o desafio exige, mais o
+snapshot do payload — fechado em `[09:52]`, já com metade da sala fora da call — e o controle de acesso.
+
+O [índice](docs/adrs/README.md) traz duas coisas que o formato normalmente não tem. Um grafo de dependência
+entre as decisões, porque elas não são independentes: o retry só existe porque o worker pode falhar, e o
+replay da dead letter só precisa de autorização porque a dead letter existe. E uma tabela do que
+**deliberadamente não virou ADR**, com a fala que desqualificou cada item. A reunião fez esse trabalho
+sozinha em dois casos: a Sofia, ao propor o HTTPS obrigatório, emenda *"isso na verdade nem é decisão
+arquitetural, é só uma validação no schema Zod"* (`[09:23]`), e a Larissa, ao fechar o teto de payload,
+diz *"não vejo como decisão arquitetural separada, é só requisito não funcional"* (`[09:24]`).
+
+Três coisas apareceram só porque a produção passou por leitura de código e conferência mecânica, e não por
+releitura da transcrição:
+
+**"5 tentativas" não fecha com cinco intervalos de backoff.** A reunião decide os dois em `[09:15]` e
+`[09:17]`, e eles são incompatíveis se lidos ao pé da letra: cinco chamadas HTTP consomem quatro esperas, não
+cinco. O desempate está na própria fala do Diego, que descreve *"quase 15 horas entre primeira falha e última
+tentativa"* — a contagem começa na primeira **falha**, o que só fecha se os cinco intervalos forem
+retentativas posteriores à entrega inicial. `1m + 5m + 30m + 2h + 12h = 14h36min`. O número canônico virou
+**5 retentativas, 5 intervalos, 6 chamadas HTTP**, com a aritmética publicada num lugar só e referenciada nos
+demais.
+
+**A classe de erro do projeto tem uma pegadinha.** A propriedade pública de `AppError` chama-se `errorCode`,
+não `code`; quem mapeia para a chave `code` do JSON é o middleware. E três das subclasses — `NotFoundError`,
+`UnauthorizedError` e `ForbiddenError` — não aceitam código customizado no construtor, o que impede que
+`WEBHOOK_NOT_FOUND` seja construído da forma óbvia. Nada disso aparece na transcrição.
+
+**Um código de erro nasceu órfão.** O Bruno nomeia `WEBHOOK_SECRET_REQUIRED` em `[09:28]`; três minutos
+depois, em `[09:31]`, o Marcos fecha que a secret é gerada por nós. O caso de uso evapora entre uma fala e
+outra. Em vez de manter o nome e inventar semântica para ele, o ADR-006 documenta a subtração — onde poderia
+ocorrer, por que não ocorre, e o que faria o código voltar a fazer sentido.
+
 ## Estado da entrega
 
 - [x] Base do processo — `progress.md` e contrato de fatos
-- [ ] ADRs
+- [x] ADRs — 8 decisões, com índice e justificativa do que ficou de fora
 - [ ] RFC
 - [ ] FDD
 - [ ] PRD
