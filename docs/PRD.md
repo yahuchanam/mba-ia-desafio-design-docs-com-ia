@@ -225,6 +225,11 @@ o percentil do OBJ-01, e confirmar que ele deduplica corretamente ao receber a m
 **O que não será validado nesta fase.** Comportamento sob rajada, porque o limite de taxa está fora de escopo;
 e comportamento com mais de um consumidor, porque a ordem só é garantida com um.
 
+**Teste de carga fica de fora, e a razão importa.** A reunião não estabeleceu volume esperado de eventos nem
+meta de vazão — não há uma linha sobre isso na fita. Sem alvo, um teste de carga mede contra um número
+inventado, e o número inventado vira compromisso. O piloto com um cliente é o primeiro momento em que existe
+volume real para observar; dimensionar depois dele é o caminho honesto.
+
 ---
 
 **Rastreabilidade.** A origem de cada item deste documento está em [`TRACKER.md`](TRACKER.md). As decisões

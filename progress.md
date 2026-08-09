@@ -54,16 +54,28 @@ Para o FDD ficar acionável, faltavam decisões de implementação que a reuniã
 
 ## Régua de qualidade
 
-Alvo declarado antes de escrever, para que o corte seja critério e não impressão:
+Alvo declarado antes de escrever, para que o corte seja critério e não impressão.
 
-| Documento | Alvo | Teto onde o retorno vira negativo |
-|---|---|---|
-| PRD | 3.500–4.500 palavras · 16–18 RF · 8–10 riscos | acima de 6.000 palavras perde altitude |
-| RFC | 1.800–2.100 palavras | acima de 2.300 vira FDD disfarçado |
-| FDD | 12.000–14.000 palavras · 8+ endpoints · 12–14 códigos `WEBHOOK_*` | acima de 18.000 vira reexplicação |
-| ADR | 10–14 KB cada, 8 no total | acima de 18 KB por ADR o custo/benefício desaba |
-| Tracker | densidade importa mais que linhas: colunas de contexto > contagem | 500 linhas rasas perdem para 130 linhas ricas |
-| README | 3.000–3.500 palavras · 4 prompts integrais · 6 iterações | — |
+**Método de contagem**, sem o qual a régua não é conferível: palavra é token separado por espaço no arquivo
+inteiro, tabelas e blocos de código inclusos — o que `wc -w` devolve. Tamanho de ADR é o tamanho do arquivo.
+
+| Documento | Alvo | Entregue | |
+|---|---|---|---|
+| PRD | 3.500–4.500 palavras · 16–18 RF · 8–10 riscos | 2.912 · 14 RF · 8 riscos | abaixo em palavras e RF |
+| RFC | 1.800–2.100 palavras · ruptura em 2.300 | 2.368 | acima da ruptura |
+| FDD | 12.000–14.000 palavras · 8+ endpoints · 12–14 códigos `WEBHOOK_*` | 7.941 · 10 endpoints · 14 códigos | abaixo em palavras |
+| ADR | 10–14 KB cada, 8 no total | 12,2 a 18,3 KB · 8 arquivos | quatro acima de 14 KB |
+| Tracker | densidade importa mais que linhas: colunas de contexto > contagem | 180 linhas · 100% dos itens cobertos | dentro |
+| README | 3.000–3.500 palavras · 4 prompts integrais · 6 iterações | 5.001 · 4 prompts · 8 iterações | acima em palavras |
+
+**Cinco das seis linhas ficaram fora do alvo.** A régua foi fixada antes de existir um único parágrafo, e
+errou em duas direções. Nos documentos de prosa longa — PRD e FDD — o alvo em palavras foi calibrado alto:
+o que o corte por densidade removeu não voltou como conteúdo, ele simplesmente não era necessário. Já o RFC e
+o README passaram do alvo, e ali o desvio é real: o RFC ultrapassa o próprio limite que esta tabela chama de
+ruptura, e o README cresceu a cada PR sem que o alvo fosse revisto.
+
+Os números acima são os da entrega, não os do plano. Retroajustar o alvo para caber no resultado seria a
+mesma auditoria de fachada que a lista de modos de falha existe para pegar.
 
 **Volume não vira nota; densidade vira.** O teste binário: se um parágrafo sobrevive à troca do nome da
 feature, é enchimento. Se ele cita um arquivo real, um intervalo de linha, um número com fonte, uma coisa que
@@ -74,7 +86,7 @@ deliberadamente não vai ser feita ou uma opção descartada com quem a derrubou
 Lista fechada antes da redação. Cada item vira uma verificação no fim, e ter a lista antes muda o que se
 procura — sem ela, a revisão só encontra o que já esperava encontrar.
 
-**Todos verificados por script no fecho do pacote. Nenhum presente.**
+**Todos verificados por script no fecho do pacote. Dez ausentes, um presente** — o do RFC, marcado abaixo.
 
 - [x] Item descartado na reunião aparecendo como requisito — a falha central do enunciado
 - [x] Mesmo item classificado de três formas em três documentos
@@ -83,7 +95,7 @@ procura — sem ela, a revisão só encontra o que já esperava encontrar.
 - [x] Tabela de auditoria com conferências falsas
 - [x] Métrica tipada como histograma ou gauge quando a infra só produz linha de log
 - [x] SLA ou percentil inventado ocupando o campo "meta"
-- [x] RFC ultrapassando o teto de 4 páginas
+- [ ] RFC ultrapassando o teto de 4 páginas — **ocorreu**: 2.368 palavras contra a ruptura de 2.300 fixada acima
 - [x] Campo em payload de resposta que não existe no schema proposto
 - [x] Frase no futuro sobre artefato do próprio pacote
 - [x] Um único commit para o pacote inteiro — torna inauditável a narrativa de iteração

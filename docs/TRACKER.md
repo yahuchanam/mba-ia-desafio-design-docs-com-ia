@@ -5,9 +5,9 @@ veio isso** — e para expor o que não tem origem, em vez de escondê-lo.
 
 | | |
 |---|---|
-| **Itens rastreados** | 173 |
-| **Fonte `TRANSCRICAO`** | 135 (78%) |
-| **Fonte `CODIGO`** | 38 linhas, 20 caminhos distintos |
+| **Itens rastreados** | 180 |
+| **Fonte `TRANSCRICAO`** | 140 (78%) |
+| **Fonte `CODIGO`** | 40 linhas, 19 caminhos distintos |
 | **Decisões sem âncora na reunião** | 30, listadas à parte na seção 3 |
 | **Cobertura da fita** | 43 dos 54 timestamps distintos — seção 4 |
 
@@ -186,6 +186,13 @@ aparência de origem que não têm.
 | `FDD-MOD-WebhookDelivery` | `docs/FDD.md` | Modelo de Dados | Model WebhookDelivery | `CODIGO` | `prisma/schema.prisma:25-138` | 6.3 · Models propostos |
 | `FDD-MOD-WebhookEndpoint` | `docs/FDD.md` | Modelo de Dados | Model WebhookEndpoint | `CODIGO` | `prisma/schema.prisma:25-138` | 6.3 · Models propostos |
 | `FDD-MOD-WebhookOutbox` | `docs/FDD.md` | Modelo de Dados | Model WebhookOutbox | `CODIGO` | `prisma/schema.prisma:25-138` | 6.3 · Models propostos |
+| `FDD-OBJ-01` | `docs/FDD.md` | Objetivo Técnico | Registrar o evento atomicamente com a mudança de status | `TRANSCRICAO` | `[09:40] Bruno` | 2 · Objetivos técnicos |
+| `FDD-OBJ-02` | `docs/FDD.md` | Objetivo Técnico | Nenhuma chamada HTTP de saída dentro da transação de pedidos | `TRANSCRICAO` | `[09:04] Bruno` | 2 · Objetivos técnicos |
+| `FDD-OBJ-03` | `docs/FDD.md` | Objetivo Técnico | Entrega em polling curto, sem dependência nova no projeto | `TRANSCRICAO` | `[09:09] Diego` | 2 · Objetivos técnicos |
+| `FDD-OBJ-04` | `docs/FDD.md` | Objetivo Técnico | Tolerar indisponibilidade do destino sem perder evento | `TRANSCRICAO` | `[09:15] Diego` | 2 · Objetivos técnicos |
+| `FDD-OBJ-05` | `docs/FDD.md` | Objetivo Técnico | Permitir ao cliente verificar origem e integridade do payload | `TRANSCRICAO` | `[09:22] Sofia` | 2 · Objetivos técnicos |
+| `FDD-OBJ-06` | `docs/FDD.md` | Objetivo Técnico | Não alterar contrato nem latência de endpoint existente — suíte atual passa sem modificação | `CODIGO` | `tests/orders.test.ts` | 2 · Objetivos técnicos |
+| `FDD-OBJ-07` | `docs/FDD.md` | Objetivo Técnico | Absorver o módulo na infraestrutura compartilhada — error e validate middlewares e `response.ts` intocados | `CODIGO` | `src/middlewares/error.middleware.ts` | 2 · Objetivos técnicos |
 | `FDD-R-01` | `docs/FDD.md` | Risco Técnico | Defeito no publisher derruba a mudança de status, a operação central do OMS — Média/Crítico | `TRANSCRICAO` | `[09:41] Diego` | 14 · Riscos |
 | `FDD-R-02` | `docs/FDD.md` | Risco Técnico | A meta de latência não se cumpre para clientes lentos — Alta/Médio | `TRANSCRICAO` | `[09:02] Marcos` | 14 · Riscos |
 | `FDD-R-03` | `docs/FDD.md` | Risco Técnico | Qualquer operador autenticado obtém segredo de qualquer cliente — Alta/Alto | `TRANSCRICAO` | `[09:37] Sofia` | 14 · Riscos |
@@ -211,7 +218,7 @@ aparência de origem que não têm.
 |---|---|---|---|
 | `docs/PRD.md` | 61 | 61 | 0 |
 | `docs/RFC.md` | 14 | 14 | 0 |
-| `docs/FDD.md` | 90 | 52 | 38 |
+| `docs/FDD.md` | 97 | 57 | 40 |
 | `docs/adrs/` (8 arquivos) | 8 | 8 | 0 |
 
 > **Fórmula da cobertura.** Itens rastreados dividido por itens identificáveis nos documentos, onde
@@ -269,25 +276,25 @@ omissão: **o que da fita ficou de fora**. São 54 timestamps distintos e 151 fa
 | `[09:01]` | — | Bruno pergunta se é tempo real mesmo — a resposta em [09:02] é que vira requisito |
 | `[09:02]` | `PRD-FE-03`, `PRD-OBJ-01`, `PRD-R-02`, `FDD-R-02` | — |
 | `[09:03]` | `ADR-001` | — |
-| `[09:04]` | `PRD-OBJ-03`, `PRD-RNF-01`, `RFC-ALT-01`, `FDD-AC-20`, `FDD-R-06` | — |
+| `[09:04]` | `PRD-OBJ-03`, `PRD-RNF-01`, `RFC-ALT-01`, `FDD-AC-20`, `FDD-R-06`, `FDD-OBJ-02` | — |
 | `[09:05]` | — | Diego entra na call; coordenação |
 | `[09:06]` | `PRD-CA-01`, `PRD-OBJ-02`, `PRD-RNF-02`, `FDD-AC-01`, `ADR-002` | — |
 | `[09:07]` | `PRD-RNF-10`, `RFC-ALT-02` | — |
 | `[09:08]` | `PRD-FE-04`, `RFC-Q05` | — |
-| `[09:09]` | `RFC-ALT-03`, `FDD-AC-07` | — |
+| `[09:09]` | `RFC-ALT-03`, `FDD-AC-07`, `FDD-OBJ-03` | — |
 | `[09:10]` | — | fala de coordenação, sem conteúdo decisório |
 | `[09:11]` | `FDD-R-05` | — |
 | `[09:12]` | `PRD-CA-11`, `PRD-RNF-09`, `FDD-AC-19` | — |
 | `[09:13]` | `PRD-FE-06`, `RFC-Q02` | — |
 | `[09:14]` | `FDD-ERR-08`, `ADR-003` | — |
-| `[09:15]` | `PRD-RF-11`, `FDD-ERR-12` | — |
+| `[09:15]` | `PRD-RF-11`, `FDD-ERR-12`, `FDD-OBJ-04` | — |
 | `[09:16]` | `PRD-CA-06`, `RFC-ALT-05` | — |
 | `[09:17]` | `PRD-RNF-04`, `RFC-ALT-04`, `FDD-AC-08` | — |
 | `[09:18]` | `PRD-CA-07`, `FDD-AC-09` | — |
 | `[09:19]` | `ADR-004` | — |
 | `[09:20]` | `PRD-CA-04`, `PRD-RF-10`, `FDD-AC-14` | — |
 | `[09:21]` | `PRD-CA-09`, `PRD-CA-14`, `PRD-RF-07`, `PRD-RF-08`, `PRD-RNF-07`, `RFC-ALT-07` … +5 | — |
-| `[09:22]` | `PRD-R-07`, `RFC-Q07`, `FDD-AC-16`, `FDD-R-08` | — |
+| `[09:22]` | `PRD-R-07`, `RFC-Q07`, `FDD-AC-16`, `FDD-R-08`, `FDD-OBJ-05` | — |
 | `[09:23]` | `PRD-CA-05`, `PRD-RNF-05`, `PRD-RNF-06`, `FDD-AC-18` | — |
 | `[09:24]` | `PRD-RNF-03`, `FDD-AC-28`, `FDD-ERR-14` | — |
 | `[09:25]` | `RFC-ALT-06`, `FDD-AC-05`, `FDD-AC-22`, `FDD-R-09`, `ADR-005` | — |
@@ -305,7 +312,7 @@ omissão: **o que da fita ficou de fora**. São 54 timestamps distintos e 151 fa
 | `[09:37]` | `PRD-FE-01`, `PRD-FE-07`, `PRD-R-03`, `PRD-R-05`, `RFC-Q04`, `FDD-R-03` … +1 | — |
 | `[09:38]` | `PRD-R-08`, `FDD-R-10` | — |
 | `[09:39]` | `PRD-FE-05`, `RFC-Q01` | — |
-| `[09:40]` | `PRD-CA-12`, `PRD-FE-02`, `PRD-R-01`, `FDD-AC-02` | — |
+| `[09:40]` | `PRD-CA-12`, `PRD-FE-02`, `PRD-R-01`, `FDD-AC-02`, `FDD-OBJ-01` | — |
 | `[09:41]` | `FDD-R-01` | — |
 | `[09:42]` | `PRD-RNF-08`, `FDD-AC-10`, `FDD-ERR-09` | — |
 | `[09:43]` | — | fala de coordenação, sem conteúdo decisório |

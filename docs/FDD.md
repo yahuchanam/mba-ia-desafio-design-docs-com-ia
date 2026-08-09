@@ -64,6 +64,8 @@ Três características do repositório condicionam a implementação:
 | Limite de taxa de envio por cliente | Observar e decidir depois — `Q01` | `[09:39] Larissa` |
 | Múltiplos workers e ordem global | Problema do futuro — `Q02` | `[09:13] Diego` |
 | Desativação automática de endpoint com falha recorrente | Nunca discutido; consequência de o alerta estar fora | — |
+| Circuit breaker por endpoint de destino | Nunca discutido. A resiliência desenhada é timeout, retry com backoff e fila de mortos, e cada evento é tentado sem memória do estado do destino. Um destino fora do ar consome as 5 retentativas de cada evento, em paralelo | — |
+| Teste de carga e meta de vazão | Sem volume esperado na reunião, não há alvo contra o qual medir — ver a estratégia de validação no [PRD](PRD.md) | — |
 
 Um evento de criação de pedido também **não entra**: `[09:43] Diego` define um único tipo de evento,
 `order.status_changed`.

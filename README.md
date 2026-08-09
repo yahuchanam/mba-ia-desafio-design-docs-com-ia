@@ -158,8 +158,10 @@ própria reunião invalidou depois. Ambos ficam documentados como ausência, com
 ## O PRD, e o objetivo que ficou sem número
 
 O [PRD](docs/PRD.md) vem por último entre os grandes documentos, e por isso é o mais curto: com as decisões,
-a proposta e a especificação prontas, ele vira consolidação. **2.841 palavras**, contra o teto de seis mil
-onde um PRD começa a perder altitude e virar documento técnico.
+a proposta e a especificação prontas, ele vira consolidação. **2.912 palavras** — abaixo das 3.500 que a régua
+em [`progress.md`](progress.md) tinha fixado como piso, e com 14 requisitos funcionais onde o alvo pedia 16.
+O alvo foi escrito antes de existir texto, e errou: o que sobrou depois do corte por densidade não pedia mais
+espaço. A régua registra o desvio em vez de ser reescrita para caber no resultado.
 
 Duas coisas dele valem o registro.
 
@@ -181,9 +183,9 @@ documentos diferentes — o que é fácil de acontecer quando o PRD, o RFC e o F
 
 ## O Tracker, e a pergunta que ninguém faz
 
-O [tracker](docs/TRACKER.md) responde *de onde veio cada item*: 177 linhas, 78% ancoradas numa fala com
+O [tracker](docs/TRACKER.md) responde *de onde veio cada item*: 180 linhas, 78% ancoradas numa fala com
 timestamp, o resto em caminho de código real. Foi **gerado a partir das tabelas dos próprios documentos**, que
-já carregam a coluna de origem — transcrever à mão 177 linhas é como se introduz divergência.
+já carregam a coluna de origem — transcrever à mão 180 linhas é como se introduz divergência.
 
 Ele tem três coisas além do formato pedido.
 
@@ -431,11 +433,14 @@ parecido, é defeito — a fronteira está descrita em cada documento, na seçã
 | Cobrir 5 das 6 decisões principais | as 6, mais snapshot e controle de acesso |
 | 1+ ADR referenciando código real | ADR-006 e ADR-008 |
 | Tracker no formato de tabela definido | `docs/TRACKER.md`, seção 1 |
-| Tracker com 70%+ de fonte `TRANSCRICAO` com timestamp | 78%, 135 de 177 |
-| Tracker com 5+ linhas de fonte `CODIGO` | 38 linhas sobre 17 arquivos |
+| Tracker com 80%+ dos itens identificáveis cobertos | 100%, 107 de 107 — a fórmula está na seção 2 do tracker |
+| Tracker com 70%+ de fonte `TRANSCRICAO` com timestamp | 78%, 140 de 180 |
+| Tracker com 5+ linhas de fonte `CODIGO` | 40 linhas sobre 19 caminhos |
 | README com as 6 seções obrigatórias | este arquivo |
+| README com 1+ ferramenta de IA listada | 4, na segunda seção |
 | README com 2+ prompts customizados | 4 prompts |
 | README com 2+ iterações concretas | 8 iterações |
+| Nenhum requisito, decisão ou restrição contradiz a transcrição ou o código | conferido por script: toda citação é literal, todo `[hh:mm] Nome` existe na fita, nenhum número diverge entre documentos, nenhum item descartado reaparece como requisito |
 | Nenhum arquivo de código inexistente citado | verificado por script; os únicos ausentes são os 10 que a feature cria, marcados como `criar` |
 | `src/`, `prisma/`, `tests/` e configuração intocados | nenhum arquivo de aplicação alterado |
 
@@ -446,6 +451,6 @@ parecido, é defeito — a fronteira está descrita em cada documento, na seçã
 - [x] RFC — proposta técnica com C4 de contexto e de contêineres
 - [x] FDD — implementação, com contratos, modelos, matriz de erros e runbook
 - [x] PRD — problema, escopo, requisitos, métricas e riscos
-- [x] Tracker — 177 itens, com índice reverso da transcrição
+- [x] Tracker — 180 itens, com índice reverso da transcrição
 - [x] README final — prompts, iterações, guia de leitura e matriz de cobertura
 - [x] Integração na `main` — os quatro documentos que a pilha de PRs deixou um degrau atrás
