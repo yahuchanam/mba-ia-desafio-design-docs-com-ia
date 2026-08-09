@@ -6,7 +6,11 @@
 | **Data**         | 2026-08-08                                                                      |
 | **Decisores**    | Larissa (Tech Lead) · Diego (Eng. Plataforma) · Bruno (Eng. Pleno) · Sofia (Eng. Segurança) · Marcos (PM) |
 | **Confirmado**   | `[09:48] Larissa` (resumo) · `[09:49]` Diego, Bruno e Sofia confirmam           |
-| **Relacionados** | [ADR-002](ADR-002-worker-de-entrega-em-polling.md) · [ADR-003](ADR-003-retry-com-backoff-e-dead-letter.md) · [ADR-007](ADR-007-payload-e-headers-do-evento.md) |
+| **Relacionados** | [ADR-002](ADR-002-worker-separado-em-polling.md) · [ADR-003](ADR-003-retry-com-backoff-e-dlq.md) · [ADR-007](ADR-007-snapshot-do-payload-na-insercao.md) |
+
+## Status
+
+Aceito, confirmado no resumo de `[09:48] Larissa` e ratificado em `[09:49]` por Diego, Bruno e Sofia.
 
 ## Contexto
 
@@ -58,10 +62,41 @@ A tabela leva índice no campo de status e em `created_at` — os dois juntos se
 
 ### O que este ADR não cobre
 
-- **Como o worker consome a outbox** — intervalo de polling, isolamento em processo separado e claim de linhas: [ADR-002](ADR-002-worker-de-entrega-em-polling.md).
-- **O que acontece quando a entrega falha** — tentativas, backoff e dead letter: [ADR-003](ADR-003-retry-com-backoff-e-dead-letter.md).
-- **O conteúdo da linha** — campos do payload, headers e momento da renderização: [ADR-007](ADR-007-payload-e-headers-do-evento.md).
+- **Como o worker consome a outbox** — intervalo de polling, isolamento em processo separado e claim de linhas: [ADR-002](ADR-002-worker-separado-em-polling.md).
+- **O que acontece quando a entrega falha** — tentativas, backoff e dead letter: [ADR-003](ADR-003-retry-com-backoff-e-dlq.md).
+- **O conteúdo da linha** — campos do payload, headers e momento da renderização: [ADR-007](ADR-007-snapshot-do-payload-na-insercao.md).
 - **Expurgo de linhas antigas** — `[09:08] Diego` deixou explícito: *"Linhas entregues a gente arquiva depois de 30 dias ou assim, fora do escopo dessa feature."*
+
+### Como as decisões se sustentam
+
+Esta é a decisão base do pacote. As outras sete descem daqui, e o grafo mostra por onde:
+
+```mermaid
+graph TD
+    A001["ADR-001<br/>outbox transacional"]
+    A002["ADR-002<br/>worker em polling"]
+    A003["ADR-003<br/>retry e DLQ"]
+    A004["ADR-004<br/>HMAC por endpoint"]
+    A005["ADR-005<br/>at-least-once"]
+    A006["ADR-006<br/>reuso dos padrões"]
+    A007["ADR-007<br/>snapshot na inserção"]
+    A008["ADR-008<br/>controle de acesso"]
+
+    A001 -->|"define o que o worker consome"| A002
+    A001 -->|"define o que é congelado"| A007
+    A002 -->|"a falha de entrega precisa de política"| A003
+    A002 -->|"reenvio após crash é a origem da duplicidade"| A005
+    A003 -->|"o replay da DLQ precisa de autorização"| A008
+    A004 -->|"a assinatura acompanha cada entrega"| A005
+    A006 -.->|"restringe a forma de tudo"| A001
+    A006 -.-> A002
+    A006 -.-> A008
+
+    classDef base fill:#0d47a1,stroke:#0a3880,color:#fff
+    classDef norm fill:#1565c0,stroke:#0d47a1,color:#fff
+    class A001,A006 base
+    class A002,A003,A004,A005,A007,A008 norm
+```
 
 ## Alternativas Consideradas
 

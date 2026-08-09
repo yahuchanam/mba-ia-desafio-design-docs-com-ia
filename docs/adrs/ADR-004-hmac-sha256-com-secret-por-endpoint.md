@@ -6,7 +6,11 @@
 | **Data**         | 2026-08-08                                                                      |
 | **Decisores**    | Larissa (Tech Lead) · Diego (Eng. Plataforma) · Bruno (Eng. Pleno) · Sofia (Eng. Segurança) · Marcos (PM) |
 | **Confirmado**   | `[09:48] Larissa` (resumo) · `[09:49]` Diego, Bruno e Sofia confirmam           |
-| **Relacionados** | [ADR-005](ADR-005-at-least-once-com-idempotencia-por-x-event-id.md) · [ADR-008](ADR-008-autorizacao-dos-endpoints-de-webhook.md) |
+| **Relacionados** | [ADR-005](ADR-005-entrega-at-least-once-com-event-id.md) · [ADR-008](ADR-008-controle-de-acesso-dos-endpoints.md) |
+
+## Status
+
+Aceito, confirmado no resumo de `[09:48] Larissa` e ratificado em `[09:49]` por Diego, Bruno e Sofia.
 
 ## Contexto
 
@@ -73,7 +77,7 @@ Headers de cada envio (`F26`, `F27`), definidos por Diego em `[09:44]` com a adi
 
 | Header | Conteúdo |
 | --- | --- |
-| `X-Event-Id` | UUID do evento — dedup do lado do cliente, ver [ADR-005](ADR-005-at-least-once-com-idempotencia-por-x-event-id.md) |
+| `X-Event-Id` | UUID do evento — dedup do lado do cliente, ver [ADR-005](ADR-005-entrega-at-least-once-com-event-id.md) |
 | `X-Signature` | `v1=<hex>`, conforme acima |
 | `X-Timestamp` | momento do envio |
 | `X-Webhook-Id` | id do endpoint cadastrado |
@@ -88,9 +92,9 @@ questão aberta declarada abaixo).
 
 ### O que este ADR não cobre
 
-- **Idempotência, `X-Event-Id` e a garantia at-least-once** → [ADR-005](ADR-005-at-least-once-com-idempotencia-por-x-event-id.md). Aqui o header aparece só como
+- **Idempotência, `X-Event-Id` e a garantia at-least-once** → [ADR-005](ADR-005-entrega-at-least-once-com-event-id.md). Aqui o header aparece só como
   dependência da defesa contra replay.
-- **Autorização dos endpoints de configuração, de rotação e do replay de DLQ** → [ADR-008](ADR-008-autorizacao-dos-endpoints-de-webhook.md).
+- **Autorização dos endpoints de configuração, de rotação e do replay de DLQ** → [ADR-008](ADR-008-controle-de-acesso-dos-endpoints.md).
 - **Colunas, contrato HTTP e códigos de erro do módulo** → FDD. ADR registra a decisão, não o contrato.
 
 ## Alternativas Consideradas
@@ -159,7 +163,7 @@ não de quem escreve o documento. Fica registrado como `Q07`.
 - O `X-Timestamp` foi pedido *"pra cliente conseguir detectar replay attack se quiser"*
   (`[09:44] Diego`), mas fica fora da assinatura: quem capturar um request pode reenviá-lo com o
   timestamp reescrito sem invalidar o HMAC. A detecção de replay recai inteiramente sobre a dedup
-  por `X-Event-Id`, que é responsabilidade do cliente ([ADR-005](ADR-005-at-least-once-com-idempotencia-por-x-event-id.md)). É `Q07`.
+  por `X-Event-Id`, que é responsabilidade do cliente ([ADR-005](ADR-005-entrega-at-least-once-com-event-id.md)). É `Q07`.
 - Rotação é ação do cliente. Se ele nunca chamar o endpoint, uma secret comprometida continua válida
   indefinidamente — não há expiração automática, e desativar endpoint sozinho está fora de escopo.
 - Duas assinaturas no mesmo header quebram cliente que compara string exata em vez de percorrer a

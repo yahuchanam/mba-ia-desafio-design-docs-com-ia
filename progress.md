@@ -24,7 +24,8 @@ Cada item marcado abaixo corresponde a um commit. Cada bloco corresponde a um Pu
 ## Estado das decisões
 
 A reunião fechou **50 decisões** (`F01`–`F50`), descartou **4 itens de escopo** (`X01`–`X04`),
-deixou **13 alternativas** para trás (`A01`–`A13`) e **5 questões em aberto**.
+deixou **13 alternativas** para trás (`A01`–`A13`) e **4 questões em aberto** — o RFC publica 6, com duas
+derivadas da análise e rotuladas como tal.
 O código forneceu **25 fatos verificados** (`C01`–`C25`).
 
 Para o FDD ficar acionável, faltavam decisões de implementação que a reunião não tomou. Foram fechadas
@@ -59,34 +60,37 @@ Alvo declarado antes de escrever, para que o corte seja critério e não impress
 **Método de contagem**, sem o qual a régua não é conferível: palavra é token separado por espaço no arquivo
 inteiro, tabelas e blocos de código inclusos — o que `wc -w` devolve. Tamanho de ADR é o tamanho do arquivo.
 
-| Documento | Alvo inicial | Recalibrado | Entregue | |
+| Documento | Alvo inicial | Recalibrado | Alvo final | Entregue |
 |---|---|---|---|---|
-| PRD | 3.500–4.500 palavras · 16–18 RF · 8–10 riscos | 2.700–3.200 · 12–16 RF · 8–10 riscos | 2.912 · 14 RF · 8 riscos | dentro |
-| RFC | 1.800–2.100 palavras · ruptura em 2.300 | 2.100–2.300 · ruptura mantida | 2.298 | dentro |
-| FDD | 12.000–14.000 palavras · 8+ endpoints · 12–14 códigos `WEBHOOK_*` | 7.500–9.000 · demais mantidos | 7.941 · 10 endpoints · 14 códigos | dentro |
-| ADR | 10–14 KB cada, 8 no total | 12–18 KB cada, 8 no total | 12,2 a 18,0 KB · 8 arquivos | dentro |
-| Tracker | densidade importa mais que linhas: colunas de contexto > contagem | mantido | 180 linhas · 100% dos itens cobertos | dentro |
-| README | 3.000–3.500 palavras · 4 prompts integrais · 6 iterações | 4.500–5.500 · 4 prompts · 8 iterações | 5.050 · 4 prompts · 8 iterações | dentro |
+| PRD | 3.500–4.500 palavras · 16–18 RF · 8–10 riscos | 2.700–3.200 | **4.000** | 4.249 · 14 RF · 8 riscos |
+| RFC | 1.800–2.100 palavras · ruptura em 2.300 | 2.100–2.300 | **2.000** | 2.021 |
+| FDD | 12.000–14.000 palavras · 8+ endpoints · 12–14 códigos `WEBHOOK_*` | 7.500–9.000 | **13.000** | 13.356 · 9 endpoints · 14 códigos |
+| ADR | 10–14 KB cada, 8 no total | 12–18 KB cada | **12–21 KB cada, 8 no total** | 12,4 a 20,3 KB · 8 arquivos |
+| Tracker | densidade importa mais que linhas: colunas de contexto > contagem | mantido | 80%+ dos itens cobertos | 276 linhas · 100% · 51 derivados à parte |
+| README | 3.000–3.500 palavras · 4 prompts integrais · 6 iterações | 4.500–5.500 | sem teto | 5.496 · 4 prompts · 10 iterações |
 
-**Por que cada faixa mudou.** A régua foi fixada antes de existir um parágrafo, contra a ideia que se tinha
-de cada documento. Três dessas ideias estavam erradas, e uma das linhas foi corrigida no documento, não na
-régua.
+**A coluna do meio é um erro registrado.** Quando os documentos ficaram abaixo do alvo, recalibrei a régua
+para a faixa em que eles tinham caído e escrevi a justificativa de cada mudança. As justificativas eram
+plausíveis — o PRD virou consolidação porque a regra de fronteira mandou a decisão para os ADRs, o FDD
+carrega o essencial em tabela e bloco de código, o `wc -w` conta o mermaid que ninguém lê como página. Todas
+verdadeiras, e nenhuma suficiente.
 
-- **PRD e FDD** foram calibrados como se fossem documentos de prosa. A regra de fronteira mandou a decisão
-  para os ADRs e o detalhe para as tabelas: o PRD virou consolidação, e o FDD carrega o essencial em 200
-  linhas de tabela e 26 blocos de código, onde a informação não chega em forma de palavra.
-- **RFC** teve o alvo subestimado. Os dois diagramas C4 e a tabela de alternativas somam cerca de 600 tokens
-  que o `wc -w` conta e que ninguém lê como página. A ruptura de 2.300 continua valendo, e o documento entrou
-  nela por **corte de duplicação**, não por recalibragem: saíram uma frase repetida da tabela de alternativas,
-  uma repetição da própria frase anterior e duas referências cruzadas que já existiam em outro lugar.
-- **ADR** foi calibrado contra o MADR puro. Os oito daqui carregam duas seções a mais — "O que este ADR não
-  cobre" e "Limitações conhecidas" com gatilho de reabertura nomeado — que pesam perto de 2 KB por arquivo.
-  O ADR-006 encostou no teto e recebeu corte de duplicação, não recalibragem.
-- **README** cresceu com 8 iterações onde o plano previa 6, e com o registro dos PRs de correção. O enunciado
-  não impõe teto a ele.
+O diagnóstico certo estava do outro lado. O PRD não era curto porque o alvo era otimista; era curto porque a
+fita tinha material de produto que nenhum documento tinha usado — o plano de entrega de `[09:46]`, o catálogo
+de status assináveis que o `enum OrderStatus` sempre teve, o nível de serviço que o Marcos aceitou em nome
+dos clientes em `[09:10]`. O FDD não era curto por ser tabelado; faltavam o DDL, o SQL do claim concorrente,
+os schemas Zod, o esqueleto do worker e um único corpo de erro de exemplo — tudo ditado pelo código, nada
+inventado. Fechados os dois buracos, os alvos iniciais eram atingíveis sem escrever uma linha sem âncora.
 
-**O alvo inicial fica na tabela.** Uma régua que some quando erra não é régua, e o valor dela está justamente
-em mostrar onde a estimativa furou. O que não se faz é apagar a coluna da esquerda.
+**Régua que se move quando o resultado não bate deixa de medir.** A tentação é sutil porque a
+justificativa costuma ser verdadeira; o que ela não é, é a explicação principal. Antes de recalibrar, o teste
+que faltou: *o documento está no tamanho certo, ou eu não procurei direito o que ainda não usei?*
+
+As três linhas que mudaram na direção contrária são honestas. O RFC teve o alvo baixado de 2.300 para 2.000
+porque o teto real do enunciado é de página, não de palavra. A faixa de ADR subiu para 21 KB porque o
+ADR-006 recebeu uma alternativa nova nesta rodada. E o README não tem teto no enunciado.
+
+**As três colunas ficam.** Apagar a do meio esconderia o erro mais instrutivo do processo.
 
 **Volume não vira nota; densidade vira.** O teste binário: se um parágrafo sobrevive à troca do nome da
 feature, é enchimento. Se ele cita um arquivo real, um intervalo de linha, um número com fonte, uma coisa que
@@ -137,7 +141,7 @@ Oito ADRs em MADR. Cobrem as 6 decisões obrigatórias do enunciado, mais snapsh
 - [x] `ADR-006-reuso-dos-padroes-do-projeto.md` — cita código real
 - [x] `ADR-007-snapshot-do-payload-na-insercao.md`
 - [x] `ADR-008-controle-de-acesso-dos-endpoints.md` — cita `requireRole` em `src/middlewares/auth.middleware.ts:49-61`
-- [x] `docs/adrs/README.md` — índice, e a lista do que **deliberadamente não virou ADR** com a justificativa
+- [x] O que **deliberadamente não virou ADR**, com a fala que desqualificou cada item — hoje no tracker, depois que o índice da pasta saiu para a contagem fechar em 8 arquivos
 - [x] README v2
 
 ### PR 3 · `docs/02-rfc` — a proposta

@@ -6,7 +6,11 @@
 | **Data**         | 2026-08-08                                                                      |
 | **Decisores**    | Larissa (Tech Lead) · Diego (Eng. Plataforma) · Bruno (Eng. Pleno) · Sofia (Eng. Segurança) · Marcos (PM) |
 | **Confirmado**   | `[09:48] Larissa` (resumo) · `[09:49]` Diego, Bruno e Sofia confirmam           |
-| **Relacionados** | [ADR-002](ADR-002-worker-dedicado-em-polling.md) · [ADR-004](ADR-004-assinatura-hmac-sha256-por-endpoint.md) · [ADR-007](ADR-007-payload-snapshot-na-insercao.md) |
+| **Relacionados** | [ADR-002](ADR-002-worker-separado-em-polling.md) · [ADR-004](ADR-004-hmac-sha256-com-secret-por-endpoint.md) · [ADR-007](ADR-007-snapshot-do-payload-na-insercao.md) |
+
+## Status
+
+Aceito, confirmado no resumo de `[09:48] Larissa` e ratificado em `[09:49]` por Diego, Bruno e Sofia.
 
 ## Contexto
 
@@ -18,7 +22,7 @@ Quando Diego retomou o assunto da entrega em `[09:24]`, o desenho de transporte 
 
 A resposta de (1) cria o problema (2), e (2) só vale alguma coisa se (3) tiver dono explícito. Nenhuma das três dava para deixar em aberto: elas definem o contrato que o cliente escreve do lado dele.
 
-A duplicidade não é hipótese teórica — ela nasce de um ponto concreto do desenho. O worker faz o `POST`, recebe `200`, e precisa de uma segunda escrita no banco para marcar a linha como entregue. Entre a resposta HTTP e esse `UPDATE` existe uma janela em que o processo pode morrer: `SIGTERM` durante o deploy, queda do host, erro de conexão com o MySQL. A reconciliação de lease descrita no [ADR-002](ADR-002-worker-dedicado-em-polling.md) devolve a linha travada para `pendente` — é exatamente isso que impede o evento de sumir, e é exatamente isso que o reenvia:
+A duplicidade não é hipótese teórica — ela nasce de um ponto concreto do desenho. O worker faz o `POST`, recebe `200`, e precisa de uma segunda escrita no banco para marcar a linha como entregue. Entre a resposta HTTP e esse `UPDATE` existe uma janela em que o processo pode morrer: `SIGTERM` durante o deploy, queda do host, erro de conexão com o MySQL. A reconciliação de lease descrita no [ADR-002](ADR-002-worker-separado-em-polling.md) devolve a linha travada para `pendente` — é exatamente isso que impede o evento de sumir, e é exatamente isso que o reenvia:
 
 ```
 worker  → POST https://cliente/webhooks/pedidos          → 200 OK
@@ -46,7 +50,7 @@ Os headers da requisição de entrega, e o papel de cada um na idempotência:
 | --- | --- | --- |
 | `X-Event-Id` | UUID da linha da outbox | **Chave de deduplicação do cliente.** Estável entre tentativas |
 | `X-Webhook-Id` | Id do endpoint cadastrado que recebeu este envio | Atribuição: cliente com vários cadastros sabe qual deles caiu |
-| `X-Signature` | HMAC — ver [ADR-004](ADR-004-assinatura-hmac-sha256-por-endpoint.md) | Autenticidade, não idempotência |
+| `X-Signature` | HMAC — ver [ADR-004](ADR-004-hmac-sha256-com-secret-por-endpoint.md) | Autenticidade, não idempotência |
 | `X-Timestamp` | Timestamp do envio | Detecção de replay pelo cliente, se ele quiser |
 | `Content-Type` | `application/json` | — |
 
@@ -62,9 +66,9 @@ A deduplicação é **do cliente**. Não mantemos tabela de recebimentos confirm
 
 ### O que este ADR não cobre
 
-- **Assinatura, formato do `X-Signature`, secret por endpoint e rotação** → [ADR-004](ADR-004-assinatura-hmac-sha256-por-endpoint.md).
-- **Conteúdo do payload, campo `event_id` no corpo e snapshot na inserção** → [ADR-007](ADR-007-payload-snapshot-na-insercao.md). Aqui trata-se apenas do header.
-- **Worker, claim de linhas, lease e reconciliação de evento travado** → [ADR-002](ADR-002-worker-dedicado-em-polling.md). Este ADR consome esse mecanismo, não o define.
+- **Assinatura, formato do `X-Signature`, secret por endpoint e rotação** → [ADR-004](ADR-004-hmac-sha256-com-secret-por-endpoint.md).
+- **Conteúdo do payload, campo `event_id` no corpo e snapshot na inserção** → [ADR-007](ADR-007-snapshot-do-payload-na-insercao.md). Aqui trata-se apenas do header.
+- **Worker, claim de linhas, lease e reconciliação de evento travado** → [ADR-002](ADR-002-worker-separado-em-polling.md). Este ADR consome esse mecanismo, não o define.
 - **Curva de retry, DLQ e replay administrativo** → ADR do retry e da dead letter.
 
 ## Alternativas Consideradas
@@ -119,13 +123,13 @@ Dispensaria o header e usaria dados que já vão no corpo. Quebra em dois casos 
 - A decisão passa a depender de um artefato fora do código. Se o texto do portal do desenvolvedor não sair junto com a feature, entregamos um comportamento surpreendente sem aviso — e o compromisso de `[09:26]` é a única mitigação que existe.
 - Cliente que dedupica de forma permanente por `X-Event-Id` **não reprocessa** um evento reenviado de propósito pelo replay de dead letter. O replay conserta a nossa ponta e pode não consertar a dele. *(Decisão derivada — a reunião não tratou este ponto: o replay preserva o `eventId` já gravado na linha de dead letter.)*
 - O fan-out multiplica entregas para um mesmo cliente com vários cadastros. É correto e intencional, mas é contraintuitivo para quem lê "um evento, uma notificação" — precisa estar no mesmo texto do portal.
-- Como o `X-Timestamp` fica fora da assinatura, a dedup por `X-Event-Id` acaba carregando também parte do papel de defesa contra reenvio adulterado. É acúmulo de função em um mecanismo que não foi desenhado para isso — o assunto pertence ao [ADR-004](ADR-004-assinatura-hmac-sha256-por-endpoint.md).
+- Como o `X-Timestamp` fica fora da assinatura, a dedup por `X-Event-Id` acaba carregando também parte do papel de defesa contra reenvio adulterado. É acúmulo de função em um mecanismo que não foi desenhado para isso — o assunto pertence ao [ADR-004](ADR-004-hmac-sha256-com-secret-por-endpoint.md).
 
 ### Limitações conhecidas
 
 | Limitação | Gatilho de reabertura |
 | --------- | --------------------- |
-| Não existe teto para o número de repetições: cada reconciliação de lease pode gerar mais uma entrega | Quando o histórico de entregas mostrar um mesmo `eventId` com mais tentativas do que as 5 do retry, reabrir junto com o [ADR-002](ADR-002-worker-dedicado-em-polling.md) |
+| Não existe teto para o número de repetições: cada reconciliação de lease pode gerar mais uma entrega | Quando o histórico de entregas mostrar um mesmo `eventId` com mais tentativas do que as 5 do retry, reabrir junto com o [ADR-002](ADR-002-worker-separado-em-polling.md) |
 | Não medimos nem verificamos se o cliente dedupica de fato | Quando Atlas Comercial, MaxDistribuição ou Nova Cargo abrir chamado de processamento duplicado, reabrir a delegação e avaliar supressão do nosso lado |
 | A decisão depende da documentação do portal do desenvolvedor, que é entregável de produto e não de engenharia | Se a revisão de segurança de fim de projeto começar sem o texto publicado, escalar para Marcos antes do deploy |
 | Replay de dead letter reusa o `eventId` e pode ser descartado pelo cliente como duplicata | Quando um replay administrativo precisar ser efetivamente reprocessado do lado do cliente, reabrir para decidir um header que marque o reenvio |

@@ -8,6 +8,10 @@
 | **Confirmado**   | `[09:48] Larissa` (resumo) · `[09:49]` Diego, Bruno, Marcos e Sofia confirmam    |
 | **Relacionados** | [ADR-003](ADR-003-retry-com-backoff-e-dlq.md) · [ADR-006](ADR-006-reuso-dos-padroes-do-projeto.md) |
 
+## Status
+
+Aceito, confirmado no resumo de `[09:48] Larissa` e ratificado em `[09:49]` por Diego, Bruno e Sofia.
+
 ## Contexto
 
 A feature abre duas superfícies HTTP com perfis de risco bem diferentes, e a reunião tratou cada uma no seu

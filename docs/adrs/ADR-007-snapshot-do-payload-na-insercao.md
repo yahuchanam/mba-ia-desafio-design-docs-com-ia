@@ -8,6 +8,11 @@
 | **Confirmado**   | `[09:52] Bruno`: *"Beleza, snapshot. Decidido."*                                |
 | **Relacionados** | [ADR-001](ADR-001-outbox-transacional-no-mysql.md) · [ADR-002](ADR-002-worker-separado-em-polling.md) · [ADR-005](ADR-005-entrega-at-least-once-com-event-id.md) |
 
+## Status
+
+Aceito. O snapshot não entrou no resumo de `[09:48]` — a pergunta de Bruno só veio depois que Marcos e
+Sofia já tinham saído da call. A decisão fechou em `[09:52] Bruno`: *"Beleza, snapshot. Decidido."*
+
 ## Contexto
 
 Duas perguntas ficaram para o fim da call, e ambas decidem o mesmo ponto: **o que exatamente é gravado na
