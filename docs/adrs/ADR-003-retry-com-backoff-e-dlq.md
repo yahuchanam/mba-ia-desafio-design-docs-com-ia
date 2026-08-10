@@ -8,6 +8,10 @@
 | **Confirmado**   | `[09:48] Larissa` (resumo) · `[09:49]` Diego, Bruno e Sofia confirmam           |
 | **Relacionados** | [ADR-001](ADR-001-outbox-transacional-no-mysql.md) · [ADR-002](ADR-002-worker-separado-em-polling.md) · [ADR-005](ADR-005-entrega-at-least-once-com-event-id.md) · [ADR-008](ADR-008-controle-de-acesso-dos-endpoints.md) |
 
+## Status
+
+Aceito, confirmado no resumo de `[09:48] Larissa` e ratificado em `[09:49]` por Diego, Bruno e Sofia.
+
 ## Contexto
 
 Larissa abriu o bloco com uma pergunta única — `[09:14] Larissa`: "Vamos pra retry. Se o cliente tá

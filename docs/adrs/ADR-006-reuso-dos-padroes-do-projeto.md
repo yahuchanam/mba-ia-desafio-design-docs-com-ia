@@ -8,11 +8,15 @@
 | **Confirmado**   | `[09:48] Larissa` (resumo) · `[09:49]` Diego, Bruno e Sofia confirmam           |
 | **Relacionados** | [ADR-001](ADR-001-outbox-transacional-no-mysql.md) · [ADR-002](ADR-002-worker-separado-em-polling.md) · [ADR-004](ADR-004-hmac-sha256-com-secret-por-endpoint.md) · [ADR-008](ADR-008-controle-de-acesso-dos-endpoints.md) |
 
+## Status
+
+Aceito, confirmado no resumo de `[09:48] Larissa` e ratificado em `[09:49]` por Diego, Bruno e Sofia.
+
 ## Contexto
 
 A feature de webhooks acrescenta o primeiro módulo novo desde que a codebase se estabilizou, e acrescenta também o primeiro processo Node que não é a API. Isso abriu três perguntas encadeadas no bloco de estrutura de código: **(1)** o módulo segue o formato dos módulos existentes ou ganha desenho próprio? **(2)** onde mora a lógica do worker, já que ele não é um controller? **(3)** como o `order.service` chama o módulo de webhooks sem que os dois times fiquem amarrados um no outro? A terceira depende da primeira: se o módulo é convencional, o ponto de entrada dele para dentro da transação de pedidos precisa ser explicitado, porque a convenção do projeto injeta dependências por construtor e o gancho não cabe nesse formato.
 
-Bruno abriu o bloco com o inventário do que já existe: *"A gente tem um padrão claro na codebase. Cada domínio é um módulo em src/modules com controller, service, repository, routes e schemas. Webhook vai seguir igual. Vou propor uma pasta src/modules/webhooks com toda a estrutura. Faz sentido?"* — `[09:27] Bruno`. Diego respondeu *"Faz."* — `[09:28] Diego`. A verificação no repositório confirma o padrão: `src/modules/customers/` tem exatamente cinco arquivos e a montagem é DI manual em `buildControllers` (`src/app.ts:26-53`), sem container nem framework de injeção.
+Bruno abriu o bloco com o inventário do que já existe: *"A gente tem um padrão claro na codebase. Cada domínio é um módulo em src/modules com controller, service, repository, routes e schemas. Webhook vai seguir igual. Vou propor uma pasta src/modules/webhooks com toda a estrutura. Faz sentido?"* — `[09:27] Bruno`. Diego respondeu *"Faz."* — `[09:28] Diego`. A tabela da decisão registra a verificação de cada padrão no repositório, com caminho e linha.
 
 O peso da decisão está menos no que se ganha e mais no que se evita gastar. O middleware de erro já resolve `AppError`, Zod e Prisma (`src/middlewares/error.middleware.ts:14-54`), e Bruno registrou a consequência direta disso: *"E o logger, que é Pino, já tá no projeto inteiro. Não vamos botar nada novo. O middleware de erro centralizado já trata AppError, Zod e Prisma. Vai pegar nossos erros sem precisar mudar nada."* — `[09:29] Bruno`. Larissa fechou o bloco em `[09:30]`: *"Decisão: reuso máximo do que já existe. AppError, Pino, error middleware, padrão de módulos, padrão de schemas Zod, padrão de códigos de erro. Webhook fica como módulo igual aos outros."*
 
@@ -109,9 +113,35 @@ A fala de Bruno que abriu a alternativa foi *"Vai me obrigar a passar um reposit
 
 O trade-off aceito é real e fica registrado: com import estático, testar o `changeStatus` isolado do módulo de webhooks exige mock de módulo em vez de troca de dependência. Como os testes do projeto são de integração real contra MySQL (`vitest.config.ts`, `C19`), o custo hoje é baixo — o teste vai exercitar a inserção de verdade.
 
-### Nenhuma alternativa foi levantada para o restante do reuso
+### Desenho próprio, fora do formato de cinco arquivos (análise deste documento — não levantada na reunião)
 
-Não houve contraproposta ao formato de módulo, ao `AppError`, ao Pino, ao error middleware nem ao padrão de schemas Zod. Bruno perguntou explicitamente *"Faz sentido?"* em `[09:27]`, Diego respondeu *"Faz."* em `[09:28]`, e Larissa fechou em `[09:30]` sem que ninguém abrisse discussão. O critério usado foi o custo de manutenção de um segundo padrão dentro do mesmo serviço, com o time pequeno já reconhecido em `[09:07] Diego`. Registrar aqui uma alternativa sintética — container de DI, reestruturação hexagonal, framework novo — seria inventar tensão onde não houve.
+|                     |                                    |
+| ------------------- | ---------------------------------- |
+| **Proponente**      | —                                  |
+| **Quem derrubou**   | Análise deste documento, com base em `[09:27] Bruno` e `[09:30] Larissa` |
+| **Citação**         | > "A gente tem um padrão claro na codebase. Cada domínio é um módulo em src/modules com controller, service, repository, routes e schemas. Webhook vai seguir igual." — `[09:27] Bruno` |
+| **Trade-off aceito**| `buildControllers` cresce mais uma vez; o custo por módulo é linear e ninguém está pagando para reduzi-lo |
+
+Duas formas caberiam aqui. Separar a entrega numa camada própria, fora de `src/modules` — um `src/delivery/` ou
+equivalente, com o worker, o cliente HTTP e a política de retry morando juntos. Ou trocar a montagem manual por
+um container de DI, em vez de estender `buildControllers` pela sexta vez. Nenhuma das duas foi cogitada na call.
+
+A recusa é verificável no código. `src/app.ts:26-53` é uma função que recebe o `PrismaClient` e instancia tudo na
+mão, em ordem: `UserRepository` → `UserService` → `UserController`, depois `AuthService` e `AuthController` sobre
+o mesmo `userRepository`, e então as tríades de customer, product e order. Devolve um objeto com cinco
+controllers. `src/routes/index.ts:21-31` recebe esse objeto e faz cinco `router.use`, um por prefixo: `/auth`,
+`/users`, `/customers`, `/products`, `/orders`. São trinta e poucas linhas de cabeamento explícito, sem
+decorator, sem reflexão, sem registro dinâmico.
+
+Um container mudaria as cinco montagens que funcionam hoje para acomodar a sexta. Uma camada de entrega fora de
+`src/modules` afastaria o `webhook.worker.ts` do módulo que possui a lógica dele — exatamente o custo que a
+tabela da decisão já registra na linha do arquivo do worker. O time é pequeno, e Diego usou essa mesma medida
+para derrubar infraestrutura nova em `[09:07]`: *"Exato, e a gente é um time pequeno. Subir Redis Cluster pra
+isso é overengineering."* O argumento vale igual para arquitetura.
+
+### Nenhuma outra alternativa foi levantada na reunião
+
+Não houve contraproposta ao formato de módulo, ao `AppError`, ao Pino, ao error middleware nem ao padrão de schemas Zod. Bruno perguntou *"Faz sentido?"* em `[09:27]`, Diego respondeu *"Faz."* em `[09:28]`, e Larissa fechou em `[09:30]`. A subseção acima entra porque a recusa dela dá para conferir abrindo dois arquivos. Fora disso, atribuir à reunião uma tensão que ela não teve — reestruturação hexagonal, framework novo, troca de ORM — seria desonesto com a fita.
 
 ## Consequências
 

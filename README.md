@@ -13,7 +13,7 @@ Este README documenta **como o pacote foi produzido**. O enunciado original do d
 Uma empresa que opera um OMS recebeu o pedido de três clientes B2B: eles querem ser notificados quando o
 status dos pedidos deles muda, em vez de ficar batendo em `GET /orders` de tempos em tempos. A decisão
 técnica foi tomada numa call de 55 minutos entre tech lead, PM, dois engenheiros e uma engenheira de
-segurança. Nada foi registrado além da gravação — `TRANSCRICAO.md`, 155 falas, 54 timestamps.
+segurança. Nada foi registrado além da gravação — `TRANSCRICAO.md`, 151 falas, 54 timestamps.
 
 A tarefa é transformar essa fita em um pacote de design docs acionável: PRD, RFC, FDD, um conjunto de ADRs,
 um tracker de rastreabilidade e este README. A restrição que define o exercício é que **nada pode ser
@@ -68,20 +68,26 @@ chamada de quem produziu a documentação. **Nenhuma pode se passar por fala da 
 documentos se sustentam: ADRs, RFC, FDD, PRD, Tracker e README. Cada item do plano em
 [`progress.md`](progress.md) é um commit. Este README cresce a cada PR, um bloco por documento entregue —
 foi assim que ele foi escrito, e é por isso que o histórico do repositório mostra a evolução em vez de um
-commit único no fim.
+commit único no fim. A pilha cobra um preço na hora de mergear, e ele está na iteração 8.
 
 ## Os ADRs, e o que a produção deles revelou
 
 Oito decisões, uma por arquivo, em [`docs/adrs/`](docs/adrs/). Cobrem as seis que o desafio exige, mais o
 snapshot do payload — fechado em `[09:52]`, já com metade da sala fora da call — e o controle de acesso.
 
-O [índice](docs/adrs/README.md) traz duas coisas que o formato normalmente não tem. Um grafo de dependência
-entre as decisões, porque elas não são independentes: o retry só existe porque o worker pode falhar, e o
-replay da dead letter só precisa de autorização porque a dead letter existe. E uma tabela do que
-**deliberadamente não virou ADR**, com a fala que desqualificou cada item. A reunião fez esse trabalho
-sozinha em dois casos: a Sofia, ao propor o HTTPS obrigatório, emenda *"isso na verdade nem é decisão
-arquitetural, é só uma validação no schema Zod"* (`[09:23]`), e a Larissa, ao fechar o teto de payload,
-diz *"não vejo como decisão arquitetural separada, é só requisito não funcional"* (`[09:24]`).
+O grafo de dependência entre as decisões abre o
+[ADR-001](docs/adrs/ADR-001-outbox-transacional-no-mysql.md), que é a decisão base de onde as outras descem:
+o retry só existe porque o worker pode falhar, e o replay da dead letter só precisa de autorização porque a
+dead letter existe. O que **deliberadamente não virou ADR** está no [tracker](docs/TRACKER.md), com a fala
+que desqualificou cada item. A reunião fez esse trabalho sozinha em dois casos: a Sofia, ao propor o HTTPS
+obrigatório, emenda *"Isso na verdade nem é decisão arquitetural, é só uma validação no schema Zod"*
+(`[09:23]`), e a Larissa, ao fechar o teto de payload, diz *"não vejo como decisão arquitetural separada, é
+só requisito não funcional"* (`[09:24]`).
+
+O formato é uma variante do MADR — Status, Contexto, Decisão, Alternativas Consideradas e Consequências —
+com duas seções a mais. **O que este ADR não cobre** aponta o dono de cada assunto vizinho, para que a
+fronteira entre decisões seja explícita em vez de negociada por quem lê. **Limitações conhecidas** nomeia o
+gatilho de reabertura de cada uma, para que o documento diga em que circunstância ele mesmo volta à mesa.
 
 Três coisas apareceram só porque a produção passou por leitura de código e conferência mecânica, e não por
 releitura da transcrição:
@@ -157,9 +163,14 @@ própria reunião invalidou depois. Ambos ficam documentados como ausência, com
 
 ## O PRD, e o objetivo que ficou sem número
 
-O [PRD](docs/PRD.md) vem por último entre os grandes documentos, e por isso é o mais curto: com as decisões,
-a proposta e a especificação prontas, ele vira consolidação. **2.841 palavras**, contra o teto de seis mil
-onde um PRD começa a perder altitude e virar documento técnico.
+O [PRD](docs/PRD.md) vem por último entre os grandes documentos. Com as decisões, a proposta e a
+especificação prontas, ele vira consolidação — e a primeira versão parou em **2.912 palavras**, abaixo do
+piso que a régua em [`progress.md`](progress.md) tinha estimado. O diagnóstico fácil era que o alvo estava
+errado, porque a regra de fronteira tinha mandado a decisão para os ADRs e o detalhe para o FDD. O
+diagnóstico certo apareceu na releitura: a fita tinha material de produto que nenhum documento do pacote
+tinha usado. O plano de entrega que a Larissa decompõe em `[09:46]` não estava em lugar nenhum. O catálogo
+de status assináveis também não, embora o `enum OrderStatus` esteja no schema desde sempre. Nem o aceite
+explícito que o Marcos dá em nome dos clientes em `[09:10]`. Fechou em **4.249 palavras**, todas ancoradas.
 
 Duas coisas dele valem o registro.
 
@@ -181,26 +192,28 @@ documentos diferentes — o que é fácil de acontecer quando o PRD, o RFC e o F
 
 ## O Tracker, e a pergunta que ninguém faz
 
-O [tracker](docs/TRACKER.md) responde *de onde veio cada item*: 177 linhas, 78% ancoradas numa fala com
+O [tracker](docs/TRACKER.md) responde *de onde veio cada item*: 276 linhas, 78% ancoradas numa fala com
 timestamp, o resto em caminho de código real. Foi **gerado a partir das tabelas dos próprios documentos**, que
-já carregam a coluna de origem — transcrever à mão 177 linhas é como se introduz divergência.
+já carregam a coluna de origem — transcrever à mão 276 linhas é como se introduz divergência.
 
-Ele tem três coisas além do formato pedido.
+Ele tem duas coisas além do formato pedido, e uma que teve de sair.
 
-**Uma coluna de seção.** A tabela padrão diz que `PRD-RF-09` veio de `[09:06] Diego`. Ela não diz onde
-encontrar `PRD-RF-09`. Com a seção de destino, a verificação funciona nos dois sentidos: da fala para o
-documento e do documento para a fala.
-
-**Uma tabela separada para o que não tem âncora.** As trinta decisões de implementação que a reunião não tomou
-não entram na tabela principal — elas ficam numa seção própria, cada uma com procedência: padrão de mercado
-verificado, derivação do código, ou escolha de quem produziu a documentação. Misturá-las daria a elas uma
-aparência de origem que não têm.
+**Uma tabela separada para o que não tem âncora.** As decisões de implementação que a reunião não tomou não
+entram na tabela principal — elas ficam numa seção própria, cada uma com procedência: padrão de mercado
+verificado, derivação do código, ou escolha de quem produziu a documentação. São 51. Misturá-las daria a elas
+uma aparência de origem que não têm.
 
 **Um índice reverso.** A tabela principal responde de onde veio cada item. O índice reverso responde a
 pergunta inversa, que é a que expõe omissão: **o que da reunião ficou de fora**. São 54 timestamps distintos
-na fita; 43 têm pelo menos um item do pacote apontando para eles. Os 11 restantes estão listados um a um, com
-o motivo — abertura de bloco, entrada na call, passagem de palavra, encerramento. A ausência fica verificável
-em vez de assumida.
+na fita; 51 têm pelo menos um item do pacote apontando para eles. Os três restantes estão listados com o
+motivo — abertura da call, entrada de participante, encerramento. A ausência fica verificável em vez de
+assumida.
+
+**A coluna de seção teve de sair.** Ela dizia onde encontrar `PRD-RF-09` dentro do documento, e não só de
+onde ele veio, o que torna a verificação bidirecional. Só que o enunciado imprime seis colunas e a tabela
+tinha sete. O ponteiro voltou para dentro da célula de localização, depois do timestamp, e as linhas do PRD
+ficaram sem ele: os cabeçalhos do PRD não são numerados, e ponteiro que não resolve é pior que ponteiro
+nenhum.
 
 E a fórmula da cobertura vem escrita ao lado do número. Percentual sem fórmula é número que ninguém consegue
 auditar.
@@ -325,8 +338,8 @@ carrega identificador de cliente.
 
 ## Iterações e ajustes
 
-Sete correções materiais. Nenhuma delas veio de reler o texto; todas vieram de conferir o texto contra alguma
-outra coisa.
+Dez correções materiais. Nenhuma veio de reler o texto. Todas vieram de conferir o que estava escrito contra
+alguma outra coisa: o código, a fita, ou o próprio repositório.
 
 **1 · A assinatura extrapolava a fala, e voltou atrás.** Decidi assinar `{timestamp}.{corpo}`, ao padrão
 Stripe, porque isso torna a proteção contra reenvio realmente eficaz — sem o timestamp assinado, ele é
@@ -368,6 +381,30 @@ durante a janela de convivência de 24 horas. Parece prudente. Mas o cenário qu
 credencial vazada — e bloquear por 24 horas desativa exatamente o caminho de emergência que a rotação existe
 para oferecer. Toda regra derivada passou a levar o teste: *ela quebra algum cenário declarado no PRD?*
 
+**8 · A pilha de PRs entregou os documentos um degrau antes da `main`.** Cada PR tinha como base a branch do
+anterior. O primeiro deles foi mergeado na `main` sete horas antes dos outros quatro — e quando o FDD chegou
+na branch do RFC, a `main` já tinha se servido dela. O defeito passou despercebido porque os arquivos
+existiam: `docs/FDD.md` estava no lugar certo com **70 bytes**, o stub que veio do repositório do desafio.
+Descobri pelo aviso de push pendente do GitHub, não por revisão. Um oitavo PR levou os quatro documentos
+que faltavam. **Pilha se mergeia do topo para a base**, ou cada PR precisa ser reapontado conforme sua base
+entra.
+
+**9 · O script de auditoria conferia caminho de código e nunca abriu um link.** Vinte e dois links markdown
+apontavam para oito nomes de arquivo ADR que não existem — `ADR-003-retry-com-backoff-e-dead-letter.md`
+quando o arquivo é `ADR-003-retry-com-backoff-e-dlq.md`, e mais sete variações do mesmo tipo. Nomes de
+trabalho que ficaram nas referências cruzadas depois que os arquivos foram renomeados. Sobreviveram porque a
+auditoria mecânica validava `src/**` contra o filesystem e tratava `](...)` como texto. Pior: este README
+afirmava que os caminhos estavam **verificados por script**. A afirmação era verdadeira sobre código e falsa
+sobre documentação, e é o tipo de meia-verdade que corrói mais confiança do que a omissão.
+
+**10 · A cobertura do tracker estava medida contra o universo errado.** Eu publicava 100%, e o número era
+real dentro da conta que eu fazia: todo item com prefixo de ID nos documentos tinha linha. Só que "itens
+identificáveis" é mais que isso — inclui cada alternativa de ADR, cada exclusão do FDD, cada trade-off, cada
+dependência. Medindo o universo que o enunciado descreve, eram **175 de 237, ou 73,8%**, abaixo do piso de
+80%. As 22 alternativas dos ADRs, sozinhas, respondiam por um terço do buraco, e dezesseis delas têm falante
+e timestamp na fita. O tracker fechou em 276 linhas. **Um denominador escolhido por quem mede não é
+medição** — é a mesma armadilha da iteração 6, com outra roupa.
+
 ## Como navegar a entrega
 
 ```text
@@ -381,7 +418,6 @@ para oferecer. Toda regra derivada passou a levar o teste: *ela quebra algum cen
     ├── FDD.md                   ← como construir         · implementação
     ├── TRACKER.md               ← de onde veio cada coisa
     ├── adrs/
-    │   ├── README.md            ← índice, grafo e o que não virou ADR
     │   └── ADR-001 … ADR-008    ← uma decisão por arquivo
     └── processo/
         └── FATOS.md             ← base de fatos (artefato de processo, não entregável)
@@ -394,8 +430,8 @@ para oferecer. Toda regra derivada passou a levar o teste: *ela quebra algum cen
 | Entender a feature em dez minutos | `RFC.md` → os dois diagramas C4 → `PRD.md` |
 | Começar a implementar | `FDD.md` inteiro → os ADRs conforme o FDD os referencia |
 | Auditar se algo foi inventado | `TRACKER.md` → escolha uma linha → abra a fala em `TRANSCRICAO.md` |
-| Entender por que foi decidido assim | `docs/adrs/README.md` → o grafo → o ADR que interessa |
-| Ver o que ficou de fora e por quê | `PRD.md` seção 4 → `RFC.md` questões em aberto → índice dos ADRs |
+| Entender por que foi decidido assim | `ADR-001` → o grafo que abre a decisão → o ADR que interessa |
+| Ver o que ficou de fora e por quê | `PRD.md` fora de escopo → `RFC.md` questões em aberto → `TRACKER.md` |
 
 Os documentos não se repetem. Se você encontrar a mesma informação em dois deles com nível de detalhe
 parecido, é defeito — a fronteira está descrita em cada documento, na seção que diz o que ele **não** cobre.
@@ -404,44 +440,47 @@ parecido, é defeito — a fronteira está descrita em cada documento, na seçã
 
 | Critério do enunciado | Onde é atendido |
 |---|---|
-| PRD com as 12 seções obrigatórias | `docs/PRD.md`, seções 1 a 12 |
-| PRD com ao menos 8 requisitos funcionais | 14 requisitos, seção 5 |
-| PRD com objetivo e meta quantitativa | 6 objetivos, 5 com meta numérica, seção 4 |
-| PRD com 2+ itens fora de escopo descartados na reunião | 7 itens, seção 4, cada um com a fala que o descartou |
-| PRD com 2+ riscos com probabilidade, impacto e mitigação | 8 riscos, seção 9 |
-| RFC com as 8 seções obrigatórias | `docs/RFC.md` |
+| `docs/PRD.md` existe e está em Markdown | sim |
+| PRD com as 12 seções obrigatórias | `docs/PRD.md`, as 12 em cabeçalho próprio |
+| PRD com ao menos 8 requisitos funcionais | 14 requisitos, todos com falante e timestamp, em Requisitos funcionais |
+| PRD com objetivo e meta quantitativa | 6 objetivos, 5 com meta numérica, em Objetivos e métricas |
+| PRD com 2+ itens fora de escopo descartados na reunião | 7 itens em Fora de escopo, com a fala que descartou cada um |
+| PRD com 2+ riscos com probabilidade, impacto e mitigação | 8 riscos, os três campos preenchidos nos oito |
+| `docs/RFC.md` existe e está em Markdown | sim |
+| RFC com as 8 seções obrigatórias | `docs/RFC.md`, começando por Metadados |
 | RFC com 2+ alternativas descartadas e trade-off | 8 alternativas, cada uma com origem e ADR |
 | RFC com 2+ questões em aberto | 6 questões, cada uma com dono e gatilho |
 | RFC referenciando 2+ ADRs com link | os 8 ADRs |
-| FDD com as 11 seções obrigatórias | `docs/FDD.md`, seções 1 a 14 |
-| FDD com 4+ endpoints com payload e status code | 10 contratos, seção 7 |
+| `docs/FDD.md` existe e está em Markdown | sim |
+| FDD com as 12 seções obrigatórias | `docs/FDD.md`, seções 1 a 12; as 16 numeradas incluem quatro extras |
+| FDD com 4+ endpoints com payload e status code | 10 contratos na seção 7, sete com request, response e tabela de status |
 | FDD com matriz de erros `WEBHOOK_*` | 14 códigos ativos, seção 8, mais 2 documentados como ausentes |
-| FDD com "Integração com o sistema existente" e 4+ caminhos reais | 21 caminhos, seção 11 |
+| FDD com "Integração com o sistema existente" e 4+ caminhos reais | 15 arquivos reais do código base, seção 11 |
 | FDD com observabilidade citando métricas, logs e tracing | seção 10, sem nomear ferramenta |
 | 5 a 8 ADRs no formato `ADR-NNN-titulo.md` | 8 arquivos em `docs/adrs/` |
 | Cada ADR com Status, Contexto, Decisão, Alternativas, Consequências | todos os 8, mais duas seções extras |
 | Cobrir 5 das 6 decisões principais | as 6, mais snapshot e controle de acesso |
-| 1+ ADR referenciando código real | ADR-006 e ADR-008 |
-| Tracker no formato de tabela definido | `docs/TRACKER.md`, seção 1 |
-| Tracker com 70%+ de fonte `TRANSCRICAO` com timestamp | 78%, 135 de 177 |
-| Tracker com 5+ linhas de fonte `CODIGO` | 38 linhas sobre 17 arquivos |
+| 1+ ADR referenciando código real | os 8; só o ADR-006 cita 28 caminhos |
+| Tracker no formato de tabela definido | `docs/TRACKER.md`, seção 1, as seis colunas do enunciado |
+| Tracker com 80%+ dos itens identificáveis cobertos | 100% — 276 linhas na tabela principal e 51 derivados na seção 3, com a fórmula ao lado |
+| Tracker com 70%+ de fonte `TRANSCRICAO` com timestamp | 78%, 216 de 276, os 216 pares conferidos contra a fita |
+| Tracker com 5+ linhas de fonte `CODIGO` | 60 linhas sobre 24 caminhos, todos existentes |
 | README com as 6 seções obrigatórias | este arquivo |
+| README com 1+ ferramenta de IA listada | 4, na segunda seção |
 | README com 2+ prompts customizados | 4 prompts |
-| README com 2+ iterações concretas | 7 iterações |
-| Nenhum arquivo de código inexistente citado | verificado por script; os únicos ausentes são os 10 que a feature cria, marcados como `criar` |
+| README com 2+ iterações concretas | 10 iterações |
+| Nenhum requisito, decisão ou restrição contradiz a transcrição ou o código | conferido por script: toda citação é literal, todo `[hh:mm] Nome` existe na fita, nenhum número diverge entre documentos, nenhum item descartado reaparece como requisito |
+| Nenhum arquivo de código inexistente citado | verificado por script, que hoje confere caminho de código **e** alvo de link markdown; os únicos ausentes são os que a feature cria, marcados como `criar` |
 | `src/`, `prisma/`, `tests/` e configuração intocados | nenhum arquivo de aplicação alterado |
 
 ## Estado da entrega
 
 - [x] Base do processo — `progress.md` e contrato de fatos
-- [x] ADRs — 8 decisões, com índice e justificativa do que ficou de fora
+- [x] ADRs — 8 decisões, com a justificativa do que deliberadamente ficou de fora
 - [x] RFC — proposta técnica com C4 de contexto e de contêineres
 - [x] FDD — implementação, com contratos, modelos, matriz de erros e runbook
 - [x] PRD — problema, escopo, requisitos, métricas e riscos
-- [x] Tracker — 177 itens, com índice reverso da transcrição
+- [x] Tracker — 276 itens rastreados e 51 derivados, com índice reverso da transcrição
 - [x] README final — prompts, iterações, guia de leitura e matriz de cobertura
-- [ ] RFC
-- [ ] FDD
-- [ ] PRD
-- [ ] Tracker
-- [ ] README final com prompts, iterações e guia de leitura
+- [x] Integração na `main` — os quatro documentos que a pilha de PRs deixou um degrau atrás
+- [x] Auditoria dos 31 critérios, um a um, com o resultado aplicado nos seis documentos

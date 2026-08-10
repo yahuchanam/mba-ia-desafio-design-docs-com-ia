@@ -24,7 +24,8 @@ Cada item marcado abaixo corresponde a um commit. Cada bloco corresponde a um Pu
 ## Estado das decisões
 
 A reunião fechou **50 decisões** (`F01`–`F50`), descartou **4 itens de escopo** (`X01`–`X04`),
-deixou **13 alternativas** para trás (`A01`–`A13`) e **5 questões em aberto**.
+deixou **13 alternativas** para trás (`A01`–`A13`) e **4 questões em aberto** — o RFC publica 6, com duas
+derivadas da análise e rotuladas como tal.
 O código forneceu **25 fatos verificados** (`C01`–`C25`).
 
 Para o FDD ficar acionável, faltavam decisões de implementação que a reunião não tomou. Foram fechadas
@@ -54,16 +55,42 @@ Para o FDD ficar acionável, faltavam decisões de implementação que a reuniã
 
 ## Régua de qualidade
 
-Alvo declarado antes de escrever, para que o corte seja critério e não impressão:
+Alvo declarado antes de escrever, para que o corte seja critério e não impressão.
 
-| Documento | Alvo | Teto onde o retorno vira negativo |
-|---|---|---|
-| PRD | 3.500–4.500 palavras · 16–18 RF · 8–10 riscos | acima de 6.000 palavras perde altitude |
-| RFC | 1.800–2.100 palavras | acima de 2.300 vira FDD disfarçado |
-| FDD | 12.000–14.000 palavras · 8+ endpoints · 12–14 códigos `WEBHOOK_*` | acima de 18.000 vira reexplicação |
-| ADR | 10–14 KB cada, 8 no total | acima de 18 KB por ADR o custo/benefício desaba |
-| Tracker | densidade importa mais que linhas: colunas de contexto > contagem | 500 linhas rasas perdem para 130 linhas ricas |
-| README | 3.000–3.500 palavras · 4 prompts integrais · 6 iterações | — |
+**Método de contagem**, sem o qual a régua não é conferível: palavra é token separado por espaço no arquivo
+inteiro, tabelas e blocos de código inclusos — o que `wc -w` devolve. Tamanho de ADR é o tamanho do arquivo.
+
+| Documento | Alvo inicial | Recalibrado | Alvo final | Entregue |
+|---|---|---|---|---|
+| PRD | 3.500–4.500 palavras · 16–18 RF · 8–10 riscos | 2.700–3.200 | **4.000** | 4.249 · 14 RF · 8 riscos |
+| RFC | 1.800–2.100 palavras · ruptura em 2.300 | 2.100–2.300 | **2.000** | 2.021 |
+| FDD | 12.000–14.000 palavras · 8+ endpoints · 12–14 códigos `WEBHOOK_*` | 7.500–9.000 | **13.000** | 13.356 · 9 endpoints · 14 códigos |
+| ADR | 10–14 KB cada, 8 no total | 12–18 KB cada | **12–21 KB cada, 8 no total** | 12,4 a 20,3 KB · 8 arquivos |
+| Tracker | densidade importa mais que linhas: colunas de contexto > contagem | mantido | 80%+ dos itens cobertos | 276 linhas · 100% · 51 derivados à parte |
+| README | 3.000–3.500 palavras · 4 prompts integrais · 6 iterações | 4.500–5.500 | sem teto | 5.496 · 4 prompts · 10 iterações |
+
+**A coluna do meio é um erro registrado.** Quando os documentos ficaram abaixo do alvo, recalibrei a régua
+para a faixa em que eles tinham caído e escrevi a justificativa de cada mudança. As justificativas eram
+plausíveis — o PRD virou consolidação porque a regra de fronteira mandou a decisão para os ADRs, o FDD
+carrega o essencial em tabela e bloco de código, o `wc -w` conta o mermaid que ninguém lê como página. Todas
+verdadeiras, e nenhuma suficiente.
+
+O diagnóstico certo estava do outro lado. O PRD não era curto porque o alvo era otimista; era curto porque a
+fita tinha material de produto que nenhum documento tinha usado — o plano de entrega de `[09:46]`, o catálogo
+de status assináveis que o `enum OrderStatus` sempre teve, o nível de serviço que o Marcos aceitou em nome
+dos clientes em `[09:10]`. O FDD não era curto por ser tabelado; faltavam o DDL, o SQL do claim concorrente,
+os schemas Zod, o esqueleto do worker e um único corpo de erro de exemplo — tudo ditado pelo código, nada
+inventado. Fechados os dois buracos, os alvos iniciais eram atingíveis sem escrever uma linha sem âncora.
+
+**Régua que se move quando o resultado não bate deixa de medir.** A tentação é sutil porque a
+justificativa costuma ser verdadeira; o que ela não é, é a explicação principal. Antes de recalibrar, o teste
+que faltou: *o documento está no tamanho certo, ou eu não procurei direito o que ainda não usei?*
+
+As três linhas que mudaram na direção contrária são honestas. O RFC teve o alvo baixado de 2.300 para 2.000
+porque o teto real do enunciado é de página, não de palavra. A faixa de ADR subiu para 21 KB porque o
+ADR-006 recebeu uma alternativa nova nesta rodada. E o README não tem teto no enunciado.
+
+**As três colunas ficam.** Apagar a do meio esconderia o erro mais instrutivo do processo.
 
 **Volume não vira nota; densidade vira.** O teste binário: se um parágrafo sobrevive à troca do nome da
 feature, é enchimento. Se ele cita um arquivo real, um intervalo de linha, um número com fonte, uma coisa que
@@ -74,7 +101,8 @@ deliberadamente não vai ser feita ou uma opção descartada com quem a derrubou
 Lista fechada antes da redação. Cada item vira uma verificação no fim, e ter a lista antes muda o que se
 procura — sem ela, a revisão só encontra o que já esperava encontrar.
 
-**Todos verificados por script no fecho do pacote. Nenhum presente.**
+**Todos verificados por script no fecho do pacote.** Dez nunca ocorreram. O do RFC ocorreu e foi corrigido:
+o documento chegou a 2.368 palavras contra a ruptura de 2.300, e voltou a 2.298 por corte de duplicação.
 
 - [x] Item descartado na reunião aparecendo como requisito — a falha central do enunciado
 - [x] Mesmo item classificado de três formas em três documentos
@@ -83,7 +111,7 @@ procura — sem ela, a revisão só encontra o que já esperava encontrar.
 - [x] Tabela de auditoria com conferências falsas
 - [x] Métrica tipada como histograma ou gauge quando a infra só produz linha de log
 - [x] SLA ou percentil inventado ocupando o campo "meta"
-- [x] RFC ultrapassando o teto de 4 páginas
+- [x] RFC ultrapassando o teto de 4 páginas — ocorreu durante a produção e foi corrigido; ver a nota acima
 - [x] Campo em payload de resposta que não existe no schema proposto
 - [x] Frase no futuro sobre artefato do próprio pacote
 - [x] Um único commit para o pacote inteiro — torna inauditável a narrativa de iteração
@@ -92,7 +120,8 @@ procura — sem ela, a revisão só encontra o que já esperava encontrar.
 
 ## Plano de entrega
 
-Sete PRs empilhados: cada branch sai da anterior, e o README cresce a cada uma, mostrando a evolução.
+Sete PRs empilhados — cada branch sai da anterior, e o README cresce a cada uma, mostrando a evolução — mais
+um oitavo, de integração, que a ordem de merge da pilha acabou exigindo.
 
 ### PR 1 · `docs/00-processo` — base do processo
 
@@ -112,7 +141,7 @@ Oito ADRs em MADR. Cobrem as 6 decisões obrigatórias do enunciado, mais snapsh
 - [x] `ADR-006-reuso-dos-padroes-do-projeto.md` — cita código real
 - [x] `ADR-007-snapshot-do-payload-na-insercao.md`
 - [x] `ADR-008-controle-de-acesso-dos-endpoints.md` — cita `requireRole` em `src/middlewares/auth.middleware.ts:49-61`
-- [x] `docs/adrs/README.md` — índice, e a lista do que **deliberadamente não virou ADR** com a justificativa
+- [x] O que **deliberadamente não virou ADR**, com a fala que desqualificou cada item — hoje no tracker, depois que o índice da pasta saiu para a contagem fechar em 8 arquivos
 - [x] README v2
 
 ### PR 3 · `docs/02-rfc` — a proposta
@@ -150,6 +179,14 @@ Oito ADRs em MADR. Cobrem as 6 decisões obrigatórias do enunciado, mais snapsh
 - [x] Passe de humanização na prosa (README e seções narrativas de PRD e RFC)
 - [x] Varredura final de consistência entre todos os documentos
 
+### PR 8 · `docs/05-tracker` → `main` — integração
+
+Os PRs 4 a 7 mergeiam dentro da pilha, e o PR 3 serviu a `main` antes deles. Cada documento parou um degrau
+antes do destino, e a `main` ficou com os stubs de FDD, PRD e tracker.
+
+- [x] Levar FDD, PRD, tracker e README final para a `main`
+- [x] Apagar as sete branches da pilha, já contidas na `main`
+
 ---
 
 ## Verificação antes de fechar
@@ -161,3 +198,4 @@ Oito ADRs em MADR. Cobrem as 6 decisões obrigatórias do enunciado, mais snapsh
 - [x] Nenhum campo de payload de resposta está fora do schema proposto
 - [x] Nenhuma ferramenta de observabilidade nomeada — a reunião nunca citou nenhuma
 - [x] `src/`, `prisma/`, `tests/` e configuração intocados
+- [x] A `main` carrega a versão final de todos os documentos, sem stub remanescente do repositório base

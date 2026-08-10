@@ -8,6 +8,10 @@
 | **Confirmado**   | `[09:48] Larissa` (resumo) · `[09:49]` Diego, Bruno e Sofia confirmam           |
 | **Relacionados** | [ADR-001](ADR-001-outbox-transacional-no-mysql.md) · [ADR-003](ADR-003-retry-com-backoff-e-dlq.md) · [ADR-005](ADR-005-entrega-at-least-once-com-event-id.md) · [ADR-006](ADR-006-reuso-dos-padroes-do-projeto.md) |
 
+## Status
+
+Aceito, confirmado no resumo de `[09:48] Larissa` e ratificado em `[09:49]` por Diego, Bruno e Sofia.
+
 ## Contexto
 
 O padrão outbox fechado em `[09:06] Diego` ([ADR-001](ADR-001-outbox-transacional-no-mysql.md)) resolve como o
